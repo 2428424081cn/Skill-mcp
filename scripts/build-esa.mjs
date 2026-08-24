@@ -1,28 +1,44 @@
-// 纯 ESM 零依赖的 ESA 构建器：支持 CJK 中文二元组分词 + BM25 稀疏检索 + 稠密向量混合检索漏斗
+// 纯 ESM 零依赖的 ESA 构建器：支持【三层通用方案】
+// Part A: 索引时 IDF 自动合成 Triggers (独占词发现)
+// Part B: 查询时全局同义词典扩展 (α=0.4 对称展开)
+// Part C: 3 闸通用拒识层 (Rule 移出普通检索池 + 地板分 + 平坦度检查)
+
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 
-console.log("== [ESA Cloud Build] 开始构建 Skill-MCP 边缘分发包 (CJK 混合检索版) ==");
+console.log("== [ESA Cloud Build] 开始构建 Skill-MCP 边缘分发包 (三层通用检索架构) ==");
 
 const skillsDir = join(process.cwd(), "skills");
 
 const CJK_RE = /[\u4e00-\u9fff]/;
+
+const STOPWORDS = new Set([
+  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做", "支持", "提供", "使用", "进行", "相关", "问题", "处理", "实现", "工具", "助手", "功能", "基于", "用于"
+]);
 
 function tokenize(text) {
   const lower = String(text || "").toLowerCase();
   const words = lower.split(/[^0-9a-z\u4e00-\u9fff]+/).filter((w) => w.length > 0);
   const out = [];
   for (const w of words) {
+    if (STOPWORDS.has(w)) continue;
     if (CJK_RE.test(w)) {
-      if (w.length === 1) out.push(w);
-      else {
-        for (let i = 0; i < w.length; i++) out.push(w[i]);
-        for (let i = 0; i < w.length - 1; i++) out.push(w.slice(i, i + 2)); // CJK 二元组
+      if (w.length === 1) {
+        if (!STOPWORDS.has(w)) out.push(w);
+      } else {
+        for (let i = 0; i < w.length - 1; i++) {
+          const bigram = w.slice(i, i + 2);
+          if (!STOPWORDS.has(bigram)) out.push(bigram);
+        }
       }
     } else {
-      out.push(w);
-      if (w.length > 4) for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+      if (!STOPWORDS.has(w)) {
+        out.push(w);
+        if (w.length > 4) {
+          for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+        }
+      }
     }
   }
   return out;
@@ -75,20 +91,6 @@ function scanDir(dir) {
       readFilesRecursive(dir);
 
       const skillMd = files["SKILL.md"] || "";
-      const profileParts = [
-        manifest.name,
-        manifest.namespace || "",
-        manifest.category || "",
-        manifest.description || "",
-        manifest.whenToUse || "",
-        (manifest.triggers || []).join(" "),
-        (manifest.keywords || []).join(" "),
-        (manifest.tags || []).join(" "),
-        skillMd.slice(0, 1500)
-      ];
-      const allTokens = tokenize(profileParts.join(" "));
-      const v = hashVector(allTokens, 2048);
-
       const hash = createHash("sha256").update(JSON.stringify(files)).digest("hex");
       const key = (manifest.namespace ? manifest.namespace + ":" : "") + manifest.name + "@" + (manifest.version || "1.0.0");
 
@@ -97,9 +99,7 @@ function scanDir(dir) {
         manifest,
         contentHash: hash,
         installedAt: Date.now(),
-        profileText: profileParts.join(" | "),
-        files,
-        vector: v
+        files
       });
     } catch (e) {
       console.warn("Skipping invalid skill at:", dir, e.message);
@@ -113,19 +113,111 @@ function scanDir(dir) {
 }
 
 scanDir(skillsDir);
-console.log(`[1/2] 成功扫描并打包 ${skills.length} 个 Skill`);
+console.log(`[1/3] 成功扫描并加载 ${skills.length} 个 Skill`);
 
-// 2. 生成完全独立的 Worker 运行时脚本
-const workerSource = `// Skill-MCP 边缘分发网关 (Aliyun ESA / Edge Functions / Cloudflare Workers)
-// 包含 ${skills.length} 个精选技能，内置 CJK 二元组分词 + BM25 字段加权检索 + 2048 维向量混合检索
+// ─────────────────────────────────────────────────────────────
+// Part A: 索引时统计全库 IDF 并自动合成每技能独占 Triggers
+// ─────────────────────────────────────────────────────────────
+console.log("[2/3] 正在通过全库 IDF 统计自动合成技能独占词 (Auto-Synthetic Triggers)...");
+
+// Pass 1: 统计全库 Document Frequency (DF)
+const dfMap = new Map();
+for (const s of skills) {
+  const m = s.manifest;
+  const md = s.files["SKILL.md"] || "";
+  const docTokens = new Set(tokenize([m.name, m.description || "", m.whenToUse || "", md.slice(0, 1000)].join(" ")));
+  for (const t of docTokens) {
+    dfMap.set(t, (dfMap.get(t) || 0) + 1);
+  }
+}
+
+const N = skills.length;
+const getIDF = (t) => Math.log((N - (dfMap.get(t) || 0) + 0.5) / ((dfMap.get(t) || 0) + 0.5) + 1);
+
+// Pass 2: 为每个技能挑 Top-8 独占度最高的特征词合成 triggers
+for (const s of skills) {
+  const m = s.manifest;
+  const md = s.files["SKILL.md"] || "";
+  const desc = (m.description || "") + " " + (m.whenToUse || "");
+  const descTokens = tokenize(desc);
+
+  const cand = new Map();
+  for (const t of descTokens) {
+    if (STOPWORDS.has(t) || t.length < 2 || /^\d+$/.test(t)) continue;
+    const termIdf = getIDF(t);
+    if (!/^[a-z]/i.test(t) && termIdf < 1.0) continue; // 中文词需具备一定独占度
+
+    // 术语得分 = 词频 * IDF * 位置加权 (前半部分核心词权重 1.2)
+    const posBonus = desc.indexOf(t) < desc.length / 2 ? 1.2 : 1.0;
+    cand.set(t, (cand.get(t) || 0) + termIdf * posBonus);
+  }
+
+  const syntheticTriggers = Array.from(cand.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([t]) => t);
+
+  s.syntheticTriggers = syntheticTriggers;
+
+  // 向量计算 (包含合成独占词)
+  const profileParts = [
+    m.name,
+    m.namespace || "",
+    m.category || "",
+    m.description || "",
+    m.whenToUse || "",
+    (m.triggers || []).join(" "),
+    syntheticTriggers.join(" "),
+    (m.keywords || []).join(" "),
+    (m.tags || []).join(" "),
+    md.slice(0, 1200)
+  ];
+  s.vector = hashVector(tokenize(profileParts.join(" ")), 2048);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Part B & C: 生成 Worker 运行时脚本 (含全局同义词典与 3 闸拒识层)
+// ─────────────────────────────────────────────────────────────
+const workerSource = `// Skill-MCP 边缘分发网关 (Aliyun ESA / Cloudflare Workers)
+// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构：
+// 1. 索引时 IDF 自动合成 Triggers (0.5 权重走 BM25)
+// 2. 查询时全局同义词典扩展 (α=0.4 对称展开)
+// 3. 通用 3 闸拒识层 (常驻 Rule 移出检索池 + 地板分 + 平坦度检查)
 
 const SKILLS = ${JSON.stringify(skills)};
 
 const CJK_RE = /[\\u4e00-\\u9fff]/;
 
 const STOPWORDS = new Set([
-  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做"
+  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做", "支持", "提供", "使用", "进行", "相关", "问题", "处理", "实现", "工具", "助手", "功能", "基于", "用于"
 ]);
+
+// Part B: 全局同义词典 (语言层通用资产，零技能耦合)
+const SYNONYMS = {
+  // 命名与标识
+  "起名": ["命名", "取名"], "取名": ["命名", "起名"], "起个名字": ["命名", "取名"], "叫什么好": ["命名"],
+  "变量名": ["标识符", "命名"], "函数名": ["方法名", "命名"], "函数命名": ["命名"],
+  // 密码与安全
+  "写死": ["硬编码", "明文"], "硬编码": ["写死", "明文"], "明文密码": ["硬编码", "敏感信息"], "揪出来": ["扫描", "检测"],
+  "查密": ["密钥", "凭据", "扫描"], "token泄露": ["密钥", "凭据", "泄露"], "泄漏": ["泄露"],
+  // 调试与排查
+  "没头绪": ["排查", "定位", "根因"], "找bug": ["调试", "排查", "定位"], "排查": ["定位", "诊断"], "定位问题": ["排查", "根因"],
+  "为什么报错": ["根因", "排查"], "卡死": ["无响应", "死锁", "挂起"], "慢查询": ["慢sql", "查询优化"],
+  // 决策与对比
+  "纠结": ["权衡", "对比", "选型"], "选不准": ["权衡", "对比", "选型"], "怎么选": ["选型", "权衡", "对比"],
+  "哪个好": ["对比", "权衡"], "优缺点": ["权衡", "利弊", "对比"],
+  // 审查与重构
+  "挑刺": ["审查", "批判", "找茬"], "帮我看看": ["审查", "检查"], "代码太乱": ["重构", "解耦", "solid"],
+  "坏味道": ["代码异味", "代码质量"], "瘦身": ["优化", "精简", "减小体积"], "提速": ["优化", "加速", "性能"],
+  // 前端与交互
+  "弹窗": ["对话框", "模态框", "dialog"], "下拉菜单": ["dropdown", "select"], "好看": ["美学", "现代ui"],
+  // 并发与后端
+  "协程泄露": ["goroutine", "并发安全"], "并发锁": ["互斥锁", "并发安全"], "死锁": ["并发安全", "死锁"],
+  // 版本与发布
+  "发版": ["发布", "版本号", "release"], "更新日志": ["changelog", "版本日志"]
+};
+
+const SYN_ALPHA = 0.4; // 同义词扩展权重
 
 function tokenize(text) {
   const lower = String(text || "").toLowerCase();
@@ -152,6 +244,36 @@ function tokenize(text) {
     }
   }
   return out;
+}
+
+// 查询同义词扩展
+function expandQueryTokens(tokens, rawQuery) {
+  const tokenWeights = new Map();
+  for (const t of tokens) tokenWeights.set(t, 1.0);
+
+  // 1. 分词级同义词展开
+  for (const t of tokens) {
+    const syns = SYNONYMS[t] || [];
+    for (const s of syns) {
+      for (const st of tokenize(s)) {
+        if (!tokenWeights.has(st)) tokenWeights.set(st, SYN_ALPHA);
+      }
+    }
+  }
+
+  // 2. 原文短语级同义词展开
+  const ql = rawQuery.toLowerCase();
+  for (const [phrase, syns] of Object.entries(SYNONYMS)) {
+    if (ql.includes(phrase)) {
+      for (const s of syns) {
+        for (const st of tokenize(s)) {
+          if (!tokenWeights.has(st)) tokenWeights.set(st, SYN_ALPHA);
+        }
+      }
+    }
+  }
+
+  return tokenWeights;
 }
 
 function hashVector(tokens, dim = 2048) {
@@ -207,13 +329,13 @@ class InvertedIndex {
     this.avgdl = this.lens.size > 0 ? sum / this.lens.size : 0;
   }
 
-  search(queryTokens) {
-    if (!queryTokens || queryTokens.length === 0) return [];
+  search(weightedTokens) {
+    if (!weightedTokens || weightedTokens.size === 0) return [];
     const N = this.lens.size;
     const scores = new Map();
     const matchCounts = new Map();
 
-    for (const t of queryTokens) {
+    for (const [t, w] of weightedTokens.entries()) {
       const m = this.postings.get(t);
       if (!m) continue;
       const nq = m.size;
@@ -221,15 +343,19 @@ class InvertedIndex {
       for (const [key, f] of m) {
         const docLen = this.lens.get(key) || this.avgdl;
         const tf = (f * (this.k1 + 1)) / (f + this.k1 * (1 - this.b + this.b * (docLen / (this.avgdl || 1))));
-        scores.set(key, (scores.get(key) || 0) + idf * tf);
-        matchCounts.set(key, (matchCounts.get(key) || 0) + 1);
+        scores.set(key, (scores.get(key) || 0) + idf * tf * w);
+        if (w >= 1.0) {
+          matchCounts.set(key, (matchCounts.get(key) || 0) + 1);
+        }
       }
     }
+
+    const primaryCount = Array.from(weightedTokens.values()).filter((w) => w >= 1.0).length || 1;
 
     const out = [];
     for (const [key, score] of scores) {
       const matched = matchCounts.get(key) || 0;
-      const coverage = queryTokens.length > 0 ? matched / queryTokens.length : 0;
+      const coverage = matched / primaryCount;
       out.push({ key, score, coverage });
     }
     out.sort((a, b) => b.score - a.score);
@@ -245,15 +371,14 @@ for (const s of SKILLS) {
   index.add(s.key, [
     { text: m.name, weight: 3.5 },
     { text: (m.triggers || []).join(" "), weight: 3.0 },
-    { text: (m.keywords || []).join(" "), weight: 2.5 },
+    { text: (s.syntheticTriggers || []).join(" "), weight: 1.5 }, // Part A: 合成 triggers 走 1.5 适度权重通道
+    { text: (m.keywords || []).join(" "), weight: 2.0 },
     { text: (m.tags || []).join(" "), weight: 2.0 },
     { text: m.description || "", weight: 2.0 },
     { text: m.whenToUse || "", weight: 1.5 },
-    { text: md.slice(0, 1500), weight: 0.8 },
+    { text: md.slice(0, 1200), weight: 0.8 },
   ]);
 }
-
-const MIN_CONFIDENCE_THRESHOLD = 0.35;
 
 async function handleMcp(msg) {
   if (!msg || typeof msg !== "object") {
@@ -308,7 +433,7 @@ async function handleMcp(msg) {
         tools: [
           {
             name: "skill_search",
-            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发，支持 verbose 调优打分与域外拒绝）",
+            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发，支持 verbose 调优打分）",
             inputSchema: {
               type: "object",
               properties: {
@@ -369,11 +494,15 @@ async function handleMcp(msg) {
         };
       }
 
-      const qv = hashVector(qTokens, 2048);
+      // Part B: 查询同义词扩展
+      const weightedTokens = expandQueryTokens(qTokens, query);
+      const allSearchTokens = Array.from(weightedTokens.keys());
+
+      const qv = hashVector(allSearchTokens, 2048);
       const qLower = query.toLowerCase();
 
-      // 1. BM25 检索打分与查询覆盖率计算
-      const bm25Hits = index.search(qTokens);
+      // 1. BM25 检索打分
+      const bm25Hits = index.search(weightedTokens);
       const bm25Map = new Map();
       const coverageMap = new Map();
       let maxBm25 = 0;
@@ -383,14 +512,20 @@ async function handleMcp(msg) {
         if (h.score > maxBm25) maxBm25 = h.score;
       }
 
-      // 2. 混合融合打分 (BM25 60% + 向量 40% + 显式触发加权 + 覆盖率判定)
-      const scored = SKILLS.map((s) => {
+      // ─────────────────────────────────────────────────────────
+      // Part C: 闸 1 — 常驻 rule 不进默认检索池 (避免充当域外黑洞)
+      // ─────────────────────────────────────────────────────────
+      const searchPool = includeRules ? SKILLS : SKILLS.filter((s) => s.manifest.skillType !== "rule");
+
+      // 2. 混合融合打分
+      const scored = searchPool.map((s) => {
         const sem = s.vector ? dot(qv, s.vector) : 0;
         const lexRaw = bm25Map.get(s.key) || 0;
         const coverage = coverageMap.get(s.key) || 0;
         const lexNorm = maxBm25 > 0 ? lexRaw / maxBm25 : 0;
 
         let bonus = 0;
+        // 人工 trigger 命中享 0.35 大额 TriggerBonus
         if (s.manifest.triggers?.some((t) => qLower.includes(t.toLowerCase()) || t.toLowerCase().includes(qLower))) {
           bonus += 0.35;
         }
@@ -398,11 +533,9 @@ async function handleMcp(msg) {
           bonus += 0.4;
         }
 
-        // 覆盖率门槛：如果关键词匹配覆盖率过低，衰减词频分
         const penalizedLex = coverage >= 0.3 ? lexNorm : lexNorm * coverage * 2;
         let totalScore = (penalizedLex * 0.6 + sem * 0.4) + bonus;
 
-        // 域外强力阻断：若无触发词与名称命中，且覆盖率 < 25% 且余弦 < 0.25，彻底判定为域外不相关
         if (bonus === 0 && coverage < 0.25 && sem < 0.25) {
           totalScore = 0;
         }
@@ -420,15 +553,19 @@ async function handleMcp(msg) {
 
       scored.sort((a, b) => b.score - a.score);
 
-      // 3. 相对 Margin 与分布平坦度拒识机制 (Pillar B)
+      // ─────────────────────────────────────────────────────────
+      // Part C: 闸 2 & 闸 3 — 地板分 + 平坦度相对 Margin 拒识
+      // ─────────────────────────────────────────────────────────
       let validHits = [];
       if (scored.length > 0 && scored[0].score > 0) {
         const median = scored[Math.floor(scored.length / 2)].score;
         const top1 = scored[0].score;
         const peakMargin = top1 - median;
+        const isTriggerHit = scored[0].bonus > 0;
 
+        // 闸 2 & 3: 只有当命中 trigger、或具有明显尖峰 (top1>=0.26 且 margin>=0.14) 时才放行
         const isConfident = (
-          scored[0].bonus > 0 ||
+          isTriggerHit ||
           (top1 >= 0.26 && peakMargin >= 0.14) ||
           (scored[0].cov >= 0.40 && scored[0].lex >= 0.50)
         );
@@ -626,4 +763,4 @@ export default {
 
 mkdirSync(join(process.cwd(), "dist"), { recursive: true });
 writeFileSync(join(process.cwd(), "dist", "esa-worker.js"), workerSource, "utf8");
-console.log(`[2/2] 🚀 构建成功！产物已输出到 dist/esa-worker.js (${(Buffer.byteLength(workerSource) / 1024).toFixed(2)} KB)`);
+console.log(`[3/3] 🚀 构建成功！产物已输出到 dist/esa-worker.js (${(Buffer.byteLength(workerSource) / 1024).toFixed(2)} KB)`);
