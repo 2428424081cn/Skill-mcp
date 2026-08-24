@@ -11,8 +11,8 @@
     "start": "node src/main.ts",
     "test": "node --test --test-isolation=none \"test/**/*.test.ts\"",
     "demo": "node scripts/demo.ts",
-    "build": "node scripts/build-esa.ts",
-    "build:esa": "node scripts/build-esa.ts",
+    "build": "node scripts/build-esa.mjs",
+    "build:esa": "node scripts/build-esa.mjs",
     "start:http": "node src/main.ts --http",
     "probe": "node scripts/probe.ts",
     "smoke": "node scripts/smoke.ts"
