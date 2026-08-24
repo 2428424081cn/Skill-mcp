@@ -118,21 +118,49 @@ function dot(a, b) {
 const embedder = new EdgeHashEmbedder(2048);
 
 async function handleMcp(msg) {
-  const method = msg.method;
-  const id = msg.id;
+  if (!msg || typeof msg !== "object") {
+    return { jsonrpc: "2.0", id: null, error: { code: -32600, message: "Invalid Request" } };
+  }
 
+  const method = msg.method;
+  const id = msg.id ?? null;
+
+  // 1. 初始化握手
   if (method === "initialize") {
     return {
       jsonrpc: "2.0",
       id,
       result: {
         protocolVersion: "2025-06-18",
-        serverInfo: { name: "skill-mcp-edge", version: "1.0.0" },
-        capabilities: { tools: { listChanged: false } }
+        serverInfo: { name: "skill-mcp", version: "1.0.0" },
+        capabilities: {
+          tools: { listChanged: false },
+          resources: { subscribe: false, listChanged: false },
+          prompts: { listChanged: false }
+        },
+        instructions: "Skill-MCP Edge: 技能与准则分发中心。代码生成与修改前请先执行 skill_search 查阅规范。"
       }
     };
   }
 
+  // 2. 客户端完成握手通知与心跳 ping
+  if (method === "notifications/initialized" || method === "initialized") {
+    return null; // MCP 标准通知无返回
+  }
+
+  if (method === "ping") {
+    return { jsonrpc: "2.0", id, result: {} };
+  }
+
+  if (method === "resources/list") {
+    return { jsonrpc: "2.0", id, result: { resources: [] } };
+  }
+
+  if (method === "prompts/list") {
+    return { jsonrpc: "2.0", id, result: { prompts: [] } };
+  }
+
+  // 3. 工具清单
   if (method === "tools/list") {
     return {
       jsonrpc: "2.0",
@@ -178,6 +206,7 @@ async function handleMcp(msg) {
     };
   }
 
+  // 4. 工具调用
   if (method === "tools/call") {
     const name = msg.params?.name;
     const args = msg.params?.arguments || {};
@@ -262,27 +291,62 @@ async function handleMcp(msg) {
       };
     }
 
-    return { jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found" } };
+    return { jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found: " + name } };
   }
 
-  return { jsonrpc: "2.0", id, error: { code: -32600, message: "Invalid Request" } };
+  return { jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found: " + method } };
 }
 
 export default {
   async fetch(request, env, ctx) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept, x-requested-with"
+    };
+
     if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
-        }
-      });
+      return new Response(null, { headers: corsHeaders });
     }
 
     const url = new URL(request.url);
 
-    if (url.pathname === "/" || url.pathname === "/health") {
+    // 1. 无论是 POST 到 /、/mcp、/sse 还是任意路径，只要是 POST 统统作为 MCP JSON-RPC 处理
+    if (request.method === "POST") {
+      try {
+        const body = await request.json();
+        const res = await handleMcp(body);
+        if (res === null) {
+          return new Response(null, { status: 202, headers: corsHeaders });
+        }
+        return new Response(JSON.stringify(res), {
+          headers: { "Content-Type": "application/json", ...corsHeaders }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({
+          jsonrpc: "2.0",
+          id: null,
+          error: { code: -32700, message: "Parse error: " + (err.message || String(err)) }
+        }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+      }
+    }
+
+    // 2. 支持 SSE (Server-Sent Events) GET 请求连接
+    if (url.pathname === "/sse" || (request.headers.get("accept") || "").includes("text/event-stream")) {
+      const endpointUri = url.origin + "/mcp";
+      const sseBody = "event: endpoint\\ndata: " + endpointUri + "\\n\\n";
+      return new Response(sseBody, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+          ...corsHeaders
+        }
+      });
+    }
+
+    // 3. 健康检查专有路径
+    if (url.pathname === "/health" || url.pathname === "/info") {
       return new Response(JSON.stringify({
         status: "ok",
         service: "Skill-MCP Edge Gateway",
@@ -290,30 +354,23 @@ export default {
         rulesCount: SKILLS.filter(s => s.manifest.skillType === "rule").length,
         version: "1.0.0"
       }, null, 2), {
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        headers: { "Content-Type": "application/json", ...corsHeaders }
       });
     }
 
-    if (url.pathname === "/mcp") {
-      if (request.method !== "POST") {
-        return new Response("Method Not Allowed", { status: 405 });
+    // 4. 默认 GET 访问根路径返回标准 MCP initialize 元信息（防止测试连接报 invalid format）
+    return new Response(JSON.stringify({
+      jsonrpc: "2.0",
+      result: {
+        protocolVersion: "2025-06-18",
+        serverInfo: { name: "skill-mcp", version: "1.0.0" },
+        capabilities: { tools: { listChanged: false } },
+        skillsCount: SKILLS.length,
+        rulesCount: SKILLS.filter(s => s.manifest.skillType === "rule").length
       }
-      try {
-        const body = await request.json();
-        const res = await handleMcp(body);
-        return new Response(JSON.stringify(res), {
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-        });
-      } catch (err) {
-        return new Response(JSON.stringify({
-          jsonrpc: "2.0",
-          id: null,
-          error: { code: -32700, message: "Parse error: " + (err.message || String(err)) }
-        }), { status: 400, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
-      }
-    }
-
-    return new Response("Not Found", { status: 404 });
+    }, null, 2), {
+      headers: { "Content-Type": "application/json", ...corsHeaders }
+    });
   }
 };
 `;
