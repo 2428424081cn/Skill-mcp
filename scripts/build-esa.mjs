@@ -238,7 +238,12 @@ async function handleMcp(msg) {
 
     if (name === "skill_get" || name === "skill_inspect") {
       const key = String(args.key || "");
-      const found = SKILLS.find((s) => s.key === key || s.manifest.name === key);
+      const found = SKILLS.find((s) =>
+        s.key === key ||
+        s.manifest.name === key ||
+        s.key.startsWith(key + "@") ||
+        (s.manifest.namespace && (s.manifest.namespace + ":" + s.manifest.name) === key)
+      );
       if (!found) {
         return { jsonrpc: "2.0", id, result: { isError: true, content: [{ type: "text", text: "Skill not found: " + key }] } };
       }
