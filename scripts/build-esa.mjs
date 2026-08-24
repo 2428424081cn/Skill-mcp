@@ -179,10 +179,10 @@ for (const s of skills) {
 // Part B & C: 生成 Worker 运行时脚本 (含全局同义词典与 3 闸拒识层)
 // ─────────────────────────────────────────────────────────────
 const workerSource = `// Skill-MCP 边缘分发网关 (Aliyun ESA / Cloudflare Workers)
-// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构：
-// 1. 索引时 IDF 自动合成 Triggers (0.5 权重走 BM25)
+// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构 v4：
+// 1. 索引时 IDF 自动合成 Triggers (合成词走 1.5 权重 BM25)
 // 2. 查询时全局同义词典扩展 (α=0.4 对称展开)
-// 3. 通用 3 闸拒识层 (常驻 Rule 移出检索池 + 地板分 + 平坦度检查)
+// 3. 通用 3 闸拒识层 (Rule 回池但 ×0.75 惩罚 + trigger 高精度清洗 + 平坦度检查)
 
 const SKILLS = ${JSON.stringify(skills)};
 
@@ -513,12 +513,18 @@ async function handleMcp(msg) {
       }
 
       // ─────────────────────────────────────────────────────────
-      // Part C: 闸 1 — 常驻 rule 不进默认检索池 (避免充当域外黑洞)
+      // Part C: 闸 1 v4 — Rule 回池，但整体分数 ×0.75 惩罚
+      // 理由：initialize 已常驻摘要，检索时 rule 不应与 tool 平权；
+      // 同时保留检索路径，用户可通过 skill_get 拿到完整 SOP。
       // ─────────────────────────────────────────────────────────
-      const searchPool = includeRules ? SKILLS : SKILLS.filter((s) => s.manifest.skillType !== "rule");
+      const residentRuleKeys = new Set(
+        SKILLS.filter((s) => s.manifest.skillType === "rule").map((s) => s.key)
+      );
+      const RULE_SCORE_PENALTY = 0.75; // rule 分数乘以此系数，让 tool 天然优先
 
-      // 2. 混合融合打分
-      const scored = searchPool.map((s) => {
+      // 2. 混合融合打分（全库，包含 rule）
+      const scored = SKILLS.map((s) => {
+        const isRule = residentRuleKeys.has(s.key);
         const sem = s.vector ? dot(qv, s.vector) : 0;
         const lexRaw = bm25Map.get(s.key) || 0;
         const coverage = coverageMap.get(s.key) || 0;
@@ -536,6 +542,9 @@ async function handleMcp(msg) {
         const penalizedLex = coverage >= 0.3 ? lexNorm : lexNorm * coverage * 2;
         let totalScore = (penalizedLex * 0.6 + sem * 0.4) + bonus;
 
+        // 闸 1 v4: rule 整体打折，让 tool 天然优先；不彻底剔除，保留 SOP 检索路径
+        if (isRule) totalScore *= RULE_SCORE_PENALTY;
+
         if (bonus === 0 && coverage < 0.25 && sem < 0.25) {
           totalScore = 0;
         }
@@ -547,7 +556,8 @@ async function handleMcp(msg) {
           sem: Math.round(sem * 1000) / 1000,
           cov: coverage,
           covStr: Math.round(coverage * 100) + "%",
-          bonus
+          bonus,
+          isRule
         };
       });
 
@@ -582,6 +592,9 @@ async function handleMcp(msg) {
           desc: h.skill.manifest.description,
           fit: h.score
         };
+        if (h.isRule) {
+          item.resident = true; // 常驻准则：摘要已通过 initialize 下发，如需完整 SOP 可调用 skill_get
+        }
         if (verbose) {
           item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem, "cov " + h.covStr];
         }

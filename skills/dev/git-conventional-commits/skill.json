@@ -14,30 +14,23 @@
   ],
   "triggers": [
     "commit",
-    "git commit",
-    "pr",
-    "pull request",
-    "changelog",
-    "release",
-    "commit规范",
     "conventional commits",
     "feat",
     "fix",
-    "提交前缀",
-    "规范化commit"
+    "commit规范",
+    "提交规范",
+    "semantic commit",
+    "angular commit"
   ],
   "keywords": [
-    "git",
     "commit",
-    "conventional-commits",
-    "rules",
-    "standards",
-    "commit规范",
     "conventional commits",
     "feat",
     "fix",
-    "提交前缀",
-    "规范化commit"
+    "commit规范",
+    "提交规范",
+    "semantic commit",
+    "angular commit"
   ],
   "whenToUse": "在生成 Git 提交说明、合并请求（PR/MR）描述或版本变更日志时必须遵守",
   "whenNotToUse": "编写临时无版控脚本或单行命令调试时无需强制",
