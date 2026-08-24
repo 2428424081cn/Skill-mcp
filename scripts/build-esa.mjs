@@ -1,11 +1,50 @@
-// 纯 ESM 零依赖的 ESA 构建器，保证在任何云端 Node.js 环境（Node 18/20/22/24）100% 一键编译成功
+// 纯 ESM 零依赖的 ESA 构建器：支持 CJK 中文二元组分词 + BM25 稀疏检索 + 稠密向量混合检索漏斗
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 
-console.log("== [ESA Cloud Build] 开始构建 Skill-MCP 边缘分发包 ==");
+console.log("== [ESA Cloud Build] 开始构建 Skill-MCP 边缘分发包 (CJK 混合检索版) ==");
 
 const skillsDir = join(process.cwd(), "skills");
+
+const CJK_RE = /[\u4e00-\u9fff]/;
+
+function tokenize(text) {
+  const lower = String(text || "").toLowerCase();
+  const words = lower.split(/[^0-9a-z\u4e00-\u9fff]+/).filter((w) => w.length > 0);
+  const out = [];
+  for (const w of words) {
+    if (CJK_RE.test(w)) {
+      if (w.length === 1) out.push(w);
+      else {
+        for (let i = 0; i < w.length; i++) out.push(w[i]);
+        for (let i = 0; i < w.length - 1; i++) out.push(w.slice(i, i + 2)); // CJK 二元组
+      }
+    } else {
+      out.push(w);
+      if (w.length > 4) for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+    }
+  }
+  return out;
+}
+
+function hashVector(tokens, dim = 2048) {
+  const v = new Array(dim).fill(0);
+  for (const t of tokens) {
+    let h = 2166136261;
+    for (let i = 0; i < t.length; i++) {
+      h ^= t.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    h = (h ^ (h >>> 13)) >>> 0;
+    v[h % dim] += 1;
+  }
+  let norm = 0;
+  for (let i = 0; i < dim; i++) norm += v[i] * v[i];
+  norm = Math.sqrt(norm);
+  if (norm > 0) { for (let i = 0; i < dim; i++) v[i] /= norm; }
+  return v;
+}
 
 // 1. 递归扫描 skills/ 目录下的所有技能
 const skills = [];
@@ -35,27 +74,20 @@ function scanDir(dir) {
 
       readFilesRecursive(dir);
 
-      // 计算 Hash 向量
-      const dim = 2048;
-      const v = new Array(dim).fill(0);
-      const profile = [
+      const skillMd = files["SKILL.md"] || "";
+      const profileParts = [
         manifest.name,
-        manifest.category,
-        manifest.description,
-        manifest.whenToUse,
+        manifest.namespace || "",
+        manifest.category || "",
+        manifest.description || "",
+        manifest.whenToUse || "",
         (manifest.triggers || []).join(" "),
-        (manifest.tags || []).join(" ")
-      ].join(" | ").toLowerCase();
-
-      for (let i = 0; i < profile.length; i++) {
-        const code = profile.charCodeAt(i);
-        const idx = Math.abs((code * 31 + i * 17) % dim);
-        v[idx] += 1;
-      }
-      let norm = 0;
-      for (let i = 0; i < dim; i++) norm += v[i] * v[i];
-      norm = Math.sqrt(norm);
-      if (norm > 0) { for (let i = 0; i < dim; i++) v[i] /= norm; }
+        (manifest.keywords || []).join(" "),
+        (manifest.tags || []).join(" "),
+        skillMd.slice(0, 1500)
+      ];
+      const allTokens = tokenize(profileParts.join(" "));
+      const v = hashVector(allTokens, 2048);
 
       const hash = createHash("sha256").update(JSON.stringify(files)).digest("hex");
       const key = (manifest.namespace ? manifest.namespace + ":" : "") + manifest.name + "@" + (manifest.version || "1.0.0");
@@ -65,7 +97,7 @@ function scanDir(dir) {
         manifest,
         contentHash: hash,
         installedAt: Date.now(),
-        profileText: profile,
+        profileText: profileParts.join(" | "),
         files,
         vector: v
       });
@@ -85,28 +117,47 @@ console.log(`[1/2] 成功扫描并打包 ${skills.length} 个 Skill`);
 
 // 2. 生成完全独立的 Worker 运行时脚本
 const workerSource = `// Skill-MCP 边缘分发网关 (Aliyun ESA / Edge Functions / Cloudflare Workers)
-// 包含 ${skills.length} 个精选技能与全局注入准则，纯内存 0 依赖极速检索
+// 包含 ${skills.length} 个精选技能，内置 CJK 二元组分词 + BM25 字段加权检索 + 2048 维向量混合检索
 
 const SKILLS = ${JSON.stringify(skills)};
 
-class EdgeHashEmbedder {
-  constructor(dim = 2048) { this.dim = dim; }
-  embed(texts) {
-    return Promise.resolve(texts.map((t) => {
-      const v = new Array(this.dim).fill(0);
-      const s = String(t || "").toLowerCase();
-      for (let i = 0; i < s.length; i++) {
-        const code = s.charCodeAt(i);
-        const idx = Math.abs((code * 31 + i * 17) % this.dim);
-        v[idx] += 1;
+const CJK_RE = /[\\u4e00-\\u9fff]/;
+
+function tokenize(text) {
+  const lower = String(text || "").toLowerCase();
+  const words = lower.split(/[^0-9a-z\\u4e00-\\u9fff]+/).filter((w) => w.length > 0);
+  const out = [];
+  for (const w of words) {
+    if (CJK_RE.test(w)) {
+      if (w.length === 1) out.push(w);
+      else {
+        for (let i = 0; i < w.length; i++) out.push(w[i]);
+        for (let i = 0; i < w.length - 1; i++) out.push(w.slice(i, i + 2));
       }
-      let norm = 0;
-      for (let i = 0; i < this.dim; i++) norm += v[i] * v[i];
-      norm = Math.sqrt(norm);
-      if (norm > 0) { for (let i = 0; i < this.dim; i++) v[i] /= norm; }
-      return v;
-    }));
+    } else {
+      out.push(w);
+      if (w.length > 4) for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+    }
   }
+  return out;
+}
+
+function hashVector(tokens, dim = 2048) {
+  const v = new Array(dim).fill(0);
+  for (const t of tokens) {
+    let h = 2166136261;
+    for (let i = 0; i < t.length; i++) {
+      h ^= t.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    h = (h ^ (h >>> 13)) >>> 0;
+    v[h % dim] += 1;
+  }
+  let norm = 0;
+  for (let i = 0; i < dim; i++) norm += v[i] * v[i];
+  norm = Math.sqrt(norm);
+  if (norm > 0) { for (let i = 0; i < dim; i++) v[i] /= norm; }
+  return v;
 }
 
 function dot(a, b) {
@@ -115,7 +166,75 @@ function dot(a, b) {
   return s;
 }
 
-const embedder = new EdgeHashEmbedder(2048);
+// 内存 BM25 倒排索引
+class InvertedIndex {
+  constructor(k1 = 1.5, b = 0.75) {
+    this.k1 = k1;
+    this.b = b;
+    this.postings = new Map();
+    this.lens = new Map();
+    this.avgdl = 0;
+  }
+
+  add(key, fields) {
+    let total = 0;
+    for (const field of fields) {
+      const tokens = tokenize(field.text);
+      total += tokens.length;
+      const freq = new Map();
+      for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1);
+      for (const [term, f] of freq) {
+        let m = this.postings.get(term);
+        if (!m) { m = new Map(); this.postings.set(term, m); }
+        m.set(key, (m.get(key) || 0) + field.weight * f);
+      }
+    }
+    this.lens.set(key, total);
+    let sum = 0;
+    for (const len of this.lens.values()) sum += len;
+    this.avgdl = this.lens.size > 0 ? sum / this.lens.size : 0;
+  }
+
+  search(query) {
+    const tokens = tokenize(query);
+    if (tokens.length === 0) return [];
+    const N = this.lens.size;
+    const scores = new Map();
+
+    for (const t of tokens) {
+      const m = this.postings.get(t);
+      if (!m) continue;
+      const nq = m.size;
+      const idf = Math.log((N - nq + 0.5) / (nq + 0.5) + 1);
+      for (const [key, f] of m) {
+        const docLen = this.lens.get(key) || this.avgdl;
+        const tf = (f * (this.k1 + 1)) / (f + this.k1 * (1 - this.b + this.b * (docLen / (this.avgdl || 1))));
+        scores.set(key, (scores.get(key) || 0) + idf * tf);
+      }
+    }
+
+    const out = [];
+    for (const [key, score] of scores) out.push({ key, score });
+    out.sort((a, b) => b.score - a.score);
+    return out;
+  }
+}
+
+// 初始化全局 BM25 倒排索引
+const index = new InvertedIndex();
+for (const s of SKILLS) {
+  const m = s.manifest;
+  const md = s.files["SKILL.md"] || "";
+  index.add(s.key, [
+    { text: m.name, weight: 3.5 },
+    { text: (m.triggers || []).join(" "), weight: 3.0 },
+    { text: (m.keywords || []).join(" "), weight: 2.5 },
+    { text: (m.tags || []).join(" "), weight: 2.0 },
+    { text: m.description || "", weight: 2.0 },
+    { text: m.whenToUse || "", weight: 1.5 },
+    { text: md.slice(0, 1500), weight: 0.8 },
+  ]);
+}
 
 async function handleMcp(msg) {
   if (!msg || typeof msg !== "object") {
@@ -125,7 +244,6 @@ async function handleMcp(msg) {
   const method = msg.method;
   const id = msg.id ?? null;
 
-  // 1. 初始化握手
   if (method === "initialize") {
     return {
       jsonrpc: "2.0",
@@ -143,9 +261,8 @@ async function handleMcp(msg) {
     };
   }
 
-  // 2. 客户端完成握手通知与心跳 ping
   if (method === "notifications/initialized" || method === "initialized") {
-    return null; // MCP 标准通知无返回
+    return null;
   }
 
   if (method === "ping") {
@@ -160,7 +277,6 @@ async function handleMcp(msg) {
     return { jsonrpc: "2.0", id, result: { prompts: [] } };
   }
 
-  // 3. 工具清单
   if (method === "tools/list") {
     return {
       jsonrpc: "2.0",
@@ -206,7 +322,6 @@ async function handleMcp(msg) {
     };
   }
 
-  // 4. 工具调用
   if (method === "tools/call") {
     const name = msg.params?.name;
     const args = msg.params?.arguments || {};
@@ -214,15 +329,41 @@ async function handleMcp(msg) {
     if (name === "skill_search") {
       const query = String(args.query || "");
       const topK = Math.min(Math.max(Number(args.topK) || 5, 1), 20);
-      const qv = (await embedder.embed([query]))[0];
+      const qTokens = tokenize(query);
+      const qv = hashVector(qTokens, 2048);
+      const qLower = query.toLowerCase();
 
+      // 1. BM25 检索打分
+      const bm25Hits = index.search(query);
+      const bm25Map = new Map();
+      let maxBm25 = 0;
+      for (const h of bm25Hits) {
+        bm25Map.set(h.key, h.score);
+        if (h.score > maxBm25) maxBm25 = h.score;
+      }
+
+      // 2. 混合融合打分 (BM25 60% + 向量 40% + 显式触发加权)
       const scored = SKILLS.map((s) => {
-        const sim = s.vector ? dot(qv, s.vector) : 0;
+        const sem = s.vector ? dot(qv, s.vector) : 0;
+        const lexRaw = bm25Map.get(s.key) || 0;
+        const lexNorm = maxBm25 > 0 ? lexRaw / maxBm25 : 0;
+
         let bonus = 0;
-        const ql = query.toLowerCase();
-        if (s.manifest.triggers?.some((t) => ql.includes(t.toLowerCase()))) bonus += 0.2;
-        if (s.manifest.name?.toLowerCase().includes(ql)) bonus += 0.3;
-        return { skill: s, score: Math.round((sim + bonus) * 1000) / 1000 };
+        if (s.manifest.triggers?.some((t) => qLower.includes(t.toLowerCase()) || t.toLowerCase().includes(qLower))) {
+          bonus += 0.35;
+        }
+        if (s.manifest.name?.toLowerCase().includes(qLower) || qLower.includes(s.manifest.name?.toLowerCase())) {
+          bonus += 0.4;
+        }
+
+        const totalScore = (lexNorm * 0.6 + sem * 0.4) + bonus;
+
+        return {
+          skill: s,
+          score: Math.round(totalScore * 1000) / 1000,
+          lex: Math.round(lexNorm * 1000) / 1000,
+          sem: Math.round(sem * 1000) / 1000
+        };
       });
 
       scored.sort((a, b) => b.score - a.score);
@@ -234,6 +375,7 @@ async function handleMcp(msg) {
         description: h.skill.manifest.description,
         category: h.skill.manifest.category,
         fit: h.score,
+        fitReasons: ["bm25 " + h.lex, "sem " + h.sem],
         skillType: h.skill.manifest.skillType || "tool"
       }));
 
@@ -265,7 +407,6 @@ async function handleMcp(msg) {
       };
     }
 
-    // 4.1 skill_inspect: 纯元数据、依赖项与文件清单（轻量结构化，不塞入完整长篇 Markdown）
     if (name === "skill_inspect") {
       const key = String(args.key || "");
       const found = SKILLS.find((s) =>
@@ -307,7 +448,6 @@ async function handleMcp(msg) {
       };
     }
 
-    // 4.2 skill_get: 获取完整的 SKILL.md 规范与操作指南（SOP 正文）
     if (name === "skill_get") {
       const key = String(args.key || "");
       const found = SKILLS.find((s) =>
@@ -355,7 +495,6 @@ export default {
 
     const url = new URL(request.url);
 
-    // 1. 无论是 POST 到 /、/mcp、/sse 还是任意路径，只要是 POST 统统作为 MCP JSON-RPC 处理
     if (request.method === "POST") {
       try {
         const body = await request.json();
@@ -375,7 +514,6 @@ export default {
       }
     }
 
-    // 2. 支持 SSE (Server-Sent Events) GET 请求连接
     if (url.pathname === "/sse" || (request.headers.get("accept") || "").includes("text/event-stream")) {
       const endpointUri = url.origin + "/mcp";
       const sseBody = "event: endpoint\\ndata: " + endpointUri + "\\n\\n";
@@ -389,7 +527,6 @@ export default {
       });
     }
 
-    // 3. 健康检查专有路径
     if (url.pathname === "/health" || url.pathname === "/info") {
       return new Response(JSON.stringify({
         status: "ok",
@@ -402,7 +539,6 @@ export default {
       });
     }
 
-    // 4. 默认 GET 访问根路径返回标准 MCP initialize 元信息（防止测试连接报 invalid format）
     return new Response(JSON.stringify({
       jsonrpc: "2.0",
       result: {
