@@ -239,6 +239,8 @@ function segment(text) {
           }
         }
       } else {
+        // v7 终局一刀：单字符拉丁 token 直接丢弃 —— "A股"切出的"a"、"A/B"的"a/b"是纯垃圾匹配源
+        if (part.length === 1) continue;
         out.push(part);
         if (part.length > 4) {
           for (let i = 0; i < part.length - 2; i++) out.push(part.slice(i, i + 3));
