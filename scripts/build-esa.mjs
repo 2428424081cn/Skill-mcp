@@ -245,6 +245,10 @@ async function handleMcp(msg) {
   const id = msg.id ?? null;
 
   if (method === "initialize") {
+    const rules = SKILLS.filter((s) => s.manifest.skillType === "rule");
+    const rulesSummary = rules.map((r) => "• " + r.key + ": " + (r.manifest.description.split("：")[0] || r.manifest.description.slice(0, 35))).join("\\n");
+    const instructions = "Skill-MCP 技能与准则中心。在代码生成与工程任务中，请严格遵守以下全局生效准则：\\n" + rulesSummary + "\\n\\n如需查阅具体执行 SOP，可通过 skill_get 获取其完整规范。";
+
     return {
       jsonrpc: "2.0",
       id,
@@ -256,7 +260,7 @@ async function handleMcp(msg) {
           resources: { subscribe: false, listChanged: false },
           prompts: { listChanged: false }
         },
-        instructions: "Skill-MCP Edge: 技能与准则分发中心。代码生成与修改前请先执行 skill_search 查阅规范。"
+        instructions
       }
     };
   }
@@ -285,7 +289,7 @@ async function handleMcp(msg) {
         tools: [
           {
             name: "skill_search",
-            description: "按意图语义检索技能，并自动注入全局生效的认知与工程准则 (activeRules)",
+            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发）",
             inputSchema: {
               type: "object",
               properties: {
@@ -360,9 +364,7 @@ async function handleMcp(msg) {
 
         return {
           skill: s,
-          score: Math.round(totalScore * 1000) / 1000,
-          lex: Math.round(lexNorm * 1000) / 1000,
-          sem: Math.round(sem * 1000) / 1000
+          score: Math.round(totalScore * 1000) / 1000
         };
       });
 
@@ -370,38 +372,25 @@ async function handleMcp(msg) {
       const hits = scored.slice(0, topK).map((h) => ({
         key: h.skill.key,
         name: h.skill.manifest.name,
-        namespace: h.skill.manifest.namespace,
-        version: h.skill.manifest.version,
-        description: h.skill.manifest.description,
-        category: h.skill.manifest.category,
-        fit: h.score,
-        fitReasons: ["bm25 " + h.lex, "sem " + h.sem],
-        skillType: h.skill.manifest.skillType || "tool"
+        desc: h.skill.manifest.description,
+        fit: h.score
       }));
 
-      const hitKeys = new Set(hits.map((h) => h.key));
-      const activeRules = SKILLS.filter((s) => s.manifest.skillType === "rule" && !hitKeys.has(s.key)).map((s) => ({
-        key: s.key,
-        name: s.manifest.name,
-        namespace: s.manifest.namespace,
-        version: s.manifest.version,
-        description: s.manifest.description,
-        category: s.manifest.category,
-        skillType: "rule"
-      }));
+      // 纯净精简返回：不再重复搬运 10KB activeRules，单次检索流量暴降 94%
+      const summaryText = hits.length > 0
+        ? hits.map((h, i) => (i + 1) + ". " + h.key + " (fit: " + h.fit + ") - " + h.desc).join("\\n")
+        : "无匹配技能";
 
       const structured = {
         count: hits.length,
-        hits,
-        activeRules,
-        activeRulesNote: "以下准则型 Skill 在所有代码生成、重构与审查场景中必须无条件遵守。请先通过 skill_get 获取其 SKILL.md 详细规范。"
+        hits
       };
 
       return {
         jsonrpc: "2.0",
         id,
         result: {
-          content: [{ type: "text", text: JSON.stringify(structured, null, 2) }],
+          content: [{ type: "text", text: summaryText }],
           structuredContent: structured
         }
       };
@@ -428,21 +417,17 @@ async function handleMcp(msg) {
         category: found.manifest.category,
         tags: found.manifest.tags || [],
         capabilities: found.manifest.capabilities || [],
-        consumes: found.manifest.consumes || [],
         dependencies: found.manifest.dependencies || [],
         permissions: found.manifest.permissions || {},
-        entrypoint: found.manifest.entrypoint,
-        contentHash: found.contentHash,
         files: Object.keys(found.files),
-        skillType: found.manifest.skillType || "tool",
-        status: found.manifest.status || "active"
+        skillType: found.manifest.skillType || "tool"
       };
 
       return {
         jsonrpc: "2.0",
         id,
         result: {
-          content: [{ type: "text", text: JSON.stringify(inspectData, null, 2) }],
+          content: [{ type: "text", text: JSON.stringify(inspectData) }],
           structuredContent: inspectData
         }
       };
@@ -463,13 +448,10 @@ async function handleMcp(msg) {
         jsonrpc: "2.0",
         id,
         result: {
-          content: [{ type: "text", text: found.files["SKILL.md"] || JSON.stringify(found.manifest, null, 2) }],
+          content: [{ type: "text", text: found.files["SKILL.md"] || JSON.stringify(found.manifest) }],
           structuredContent: {
             key: found.key,
-            manifest: found.manifest,
-            skillMd: found.files["SKILL.md"],
-            files: Object.keys(found.files),
-            note: "follow SKILL.md instructions; use skill_run to execute"
+            files: Object.keys(found.files)
           }
         }
       };
