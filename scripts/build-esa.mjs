@@ -123,20 +123,32 @@ const SKILLS = ${JSON.stringify(skills)};
 
 const CJK_RE = /[\\u4e00-\\u9fff]/;
 
+const STOPWORDS = new Set([
+  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做"
+]);
+
 function tokenize(text) {
   const lower = String(text || "").toLowerCase();
   const words = lower.split(/[^0-9a-z\\u4e00-\\u9fff]+/).filter((w) => w.length > 0);
   const out = [];
   for (const w of words) {
+    if (STOPWORDS.has(w)) continue;
     if (CJK_RE.test(w)) {
-      if (w.length === 1) out.push(w);
-      else {
-        for (let i = 0; i < w.length; i++) out.push(w[i]);
-        for (let i = 0; i < w.length - 1; i++) out.push(w.slice(i, i + 2));
+      if (w.length === 1) {
+        if (!STOPWORDS.has(w)) out.push(w);
+      } else {
+        for (let i = 0; i < w.length - 1; i++) {
+          const bigram = w.slice(i, i + 2);
+          if (!STOPWORDS.has(bigram)) out.push(bigram);
+        }
       }
     } else {
-      out.push(w);
-      if (w.length > 4) for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+      if (!STOPWORDS.has(w)) {
+        out.push(w);
+        if (w.length > 4) {
+          for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+        }
+      }
     }
   }
   return out;
@@ -195,13 +207,13 @@ class InvertedIndex {
     this.avgdl = this.lens.size > 0 ? sum / this.lens.size : 0;
   }
 
-  search(query) {
-    const tokens = tokenize(query);
-    if (tokens.length === 0) return [];
+  search(queryTokens) {
+    if (!queryTokens || queryTokens.length === 0) return [];
     const N = this.lens.size;
     const scores = new Map();
+    const matchCounts = new Map();
 
-    for (const t of tokens) {
+    for (const t of queryTokens) {
       const m = this.postings.get(t);
       if (!m) continue;
       const nq = m.size;
@@ -210,11 +222,16 @@ class InvertedIndex {
         const docLen = this.lens.get(key) || this.avgdl;
         const tf = (f * (this.k1 + 1)) / (f + this.k1 * (1 - this.b + this.b * (docLen / (this.avgdl || 1))));
         scores.set(key, (scores.get(key) || 0) + idf * tf);
+        matchCounts.set(key, (matchCounts.get(key) || 0) + 1);
       }
     }
 
     const out = [];
-    for (const [key, score] of scores) out.push({ key, score });
+    for (const [key, score] of scores) {
+      const matched = matchCounts.get(key) || 0;
+      const coverage = queryTokens.length > 0 ? matched / queryTokens.length : 0;
+      out.push({ key, score, coverage });
+    }
     out.sort((a, b) => b.score - a.score);
     return out;
   }
@@ -235,6 +252,8 @@ for (const s of SKILLS) {
     { text: md.slice(0, 1500), weight: 0.8 },
   ]);
 }
+
+const MIN_CONFIDENCE_THRESHOLD = 0.35;
 
 async function handleMcp(msg) {
   if (!msg || typeof msg !== "object") {
@@ -289,7 +308,7 @@ async function handleMcp(msg) {
         tools: [
           {
             name: "skill_search",
-            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发，支持 verbose 调优打分）",
+            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发，支持 verbose 调优打分与域外拒绝）",
             inputSchema: {
               type: "object",
               properties: {
@@ -339,22 +358,36 @@ async function handleMcp(msg) {
       const includeRules = Boolean(args.includeRules);
 
       const qTokens = tokenize(query);
+      if (qTokens.length === 0) {
+        return {
+          jsonrpc: "2.0",
+          id,
+          result: {
+            content: [{ type: "text", text: "未找到与该需求匹配的技能（输入均为通用无意义词汇）。" }],
+            structuredContent: { count: 0, hits: [] }
+          }
+        };
+      }
+
       const qv = hashVector(qTokens, 2048);
       const qLower = query.toLowerCase();
 
-      // 1. BM25 检索打分
-      const bm25Hits = index.search(query);
+      // 1. BM25 检索打分与查询覆盖率计算
+      const bm25Hits = index.search(qTokens);
       const bm25Map = new Map();
+      const coverageMap = new Map();
       let maxBm25 = 0;
       for (const h of bm25Hits) {
         bm25Map.set(h.key, h.score);
+        coverageMap.set(h.key, h.coverage);
         if (h.score > maxBm25) maxBm25 = h.score;
       }
 
-      // 2. 混合融合打分 (BM25 60% + 向量 40% + 显式触发加权)
+      // 2. 混合融合打分 (BM25 60% + 向量 40% + 显式触发加权 + 覆盖率判定)
       const scored = SKILLS.map((s) => {
         const sem = s.vector ? dot(qv, s.vector) : 0;
         const lexRaw = bm25Map.get(s.key) || 0;
+        const coverage = coverageMap.get(s.key) || 0;
         const lexNorm = maxBm25 > 0 ? lexRaw / maxBm25 : 0;
 
         let bonus = 0;
@@ -365,18 +398,29 @@ async function handleMcp(msg) {
           bonus += 0.4;
         }
 
-        const totalScore = (lexNorm * 0.6 + sem * 0.4) + bonus;
+        // 覆盖率门槛：如果关键词匹配覆盖率过低，衰减词频分
+        const penalizedLex = coverage >= 0.3 ? lexNorm : lexNorm * coverage * 2;
+        let totalScore = (penalizedLex * 0.6 + sem * 0.4) + bonus;
+
+        // 域外强力阻断：若无触发词与名称命中，且覆盖率 < 25% 且余弦 < 0.25，彻底判定为域外不相关
+        if (bonus === 0 && coverage < 0.25 && sem < 0.25) {
+          totalScore = 0;
+        }
 
         return {
           skill: s,
           score: Math.round(totalScore * 1000) / 1000,
           lex: Math.round(lexNorm * 1000) / 1000,
-          sem: Math.round(sem * 1000) / 1000
+          sem: Math.round(sem * 1000) / 1000,
+          cov: Math.round(coverage * 100) + "%"
         };
       });
 
-      scored.sort((a, b) => b.score - a.score);
-      const hits = scored.slice(0, topK).map((h) => {
+      // 3. 置信度硬截断 (低于 MIN_CONFIDENCE_THRESHOLD 的彻底过滤)
+      const validHits = scored.filter((s) => s.score >= MIN_CONFIDENCE_THRESHOLD);
+      validHits.sort((a, b) => b.score - a.score);
+
+      const hits = validHits.slice(0, topK).map((h) => {
         const item = {
           key: h.skill.key,
           name: h.skill.manifest.name,
@@ -384,7 +428,7 @@ async function handleMcp(msg) {
           fit: h.score
         };
         if (verbose) {
-          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem];
+          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem, "cov " + h.cov];
         }
         return item;
       });
@@ -395,14 +439,13 @@ async function handleMcp(msg) {
             const fitStr = verbose && h.fitReasons ? h.fit + " [" + h.fitReasons.join(", ") + "]" : h.fit;
             return (i + 1) + ". " + h.key + " (fit: " + fitStr + ") - " + h.desc;
           }).join("\\n")
-        : "无匹配技能";
+        : "未找到与该需求匹配的技能（本服务专注于软件工程、架构设计、代码质量、DevOps 与技术推理）。";
 
       const structured = {
         count: hits.length,
         hits
       };
 
-      // 如果客户端显式要求附带准则清单
       if (includeRules) {
         const hitKeys = new Set(hits.map((h) => h.key));
         structured.activeRules = SKILLS.filter((s) => s.manifest.skillType === "rule" && !hitKeys.has(s.key)).map((s) => ({
