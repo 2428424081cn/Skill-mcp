@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "dataform-bigquery",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "code for BigQuery ELT. Use this when creating or modifying Dataform pipelines, actions,,or source declarations, when Dataform, SQLX, or BigQuery are mentioned in a transformation,,when data needs to be ingested from GCS into BigQuery via Dataform, or when setting,up a new Datafor",
+  "category": "gcp",
+  "tags": [
+    "dataform",
+    "bigquery"
+  ],
+  "triggers": [
+    "dataform-bigquery",
+    "dataform",
+    "bigquery",
+    "Dataform",
+    "ELT 管道"
+  ],
+  "keywords": [
+    "dataform",
+    "bigquery",
+    "Dataform",
+    "ELT 管道"
+  ],
+  "whenToUse": "code for BigQuery ELT. Use this when creating or modifying Dataform pipelines, actions,,or source declarations, when Dataform, SQLX, or BigQuery are mentioned in a transformation,,when data needs to be ingested from GCS into BigQuery via Dataform, or when setting,up a new Datafor",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:dataform-bigquery"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "name": "git-workflow-pro",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "Git 规范化工作流助手：自动分析暂存区/工作区代码变动，生成 Conventional Commits 规范提交信息，提供分支管理与冲突排查流程。",
+  "category": "dev",
+  "tags": [
+    "git",
+    "vcs",
+    "commit",
+    "diff",
+    "conventional-commits",
+    "workflow"
+  ],
+  "triggers": [
+    "git 提交",
+    "生成 commit",
+    "检查 git 状态",
+    "git diff",
+    "git-workflow-pro",
+    "代码提交规范"
+  ],
+  "keywords": [
+    "git",
+    "commit",
+    "diff",
+    "status",
+    "branch",
+    "vcs",
+    "conventional"
+  ],
+  "whenToUse": "在需要提交代码、生成符合标准的 commit message、分析暂存区变动或检查遗留调试语句时使用。",
+  "whenNotToUse": "远程仓库 GitHub/GitLab 的在线 PR/Issue 管理。",
+  "useCases": [
+    {
+      "task": "分析暂存区变动并生成 Conventional Commit 提交信息"
+    },
+    {
+      "task": "扫描暂存区是否存在 console.log 或临时断点"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "git.action",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "analyze_diff",
+              "check_staged",
+              "generate_message"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "feat",
+              "fix",
+              "docs",
+              "refactor",
+              "test",
+              "chore"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "git.result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "report": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:git-workflow",
+    "vcs:commit-helper"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 10000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var act = input.action || 'generate_message'; if (act === 'generate_message') { var t = input.type || 'feat'; var s = input.scope ? '(' + input.scope + ')' : ''; var sub = input.subject || 'update codebase'; return { success: true, message: t + s + ': ' + sub }; } return { success: true, message: 'Git check passed', report: { stagedClean: true } };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

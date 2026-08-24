@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "name": "meeting-notes",
+  "namespace": "doc",
+  "version": "1.0.0",
+  "description": "从会议记录文本提取要点、发言人统计与待办事项，输出结构化 Markdown 纪要。",
+  "category": "doc",
+  "tags": [
+    "meeting",
+    "notes"
+  ],
+  "triggers": [
+    "会议纪要",
+    "会议记录",
+    "meeting notes",
+    "待办",
+    "行动项"
+  ],
+  "keywords": [
+    "会议",
+    "纪要",
+    "待办"
+  ],
+  "whenToUse": "有会议文字记录，需要结构化纪要（要点 + 待办 + 发言人）。",
+  "whenNotToUse": "不做语音转写；口语化文本质量差时提取效果有限。",
+  "useCases": [
+    {
+      "task": "把例会文字记录整理成纪要"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "transcript": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "transcript"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "markdown",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "markdown": {
+            "type": "string"
+          },
+          "actionItems": {
+            "type": "array"
+          },
+          "speakerCounts": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "markdown"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "doc:meeting-notes"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var text = String(input.transcript || \"\");\nvar lines = text.split(/\\r?\\n/).filter(function (l) { return l.trim() !== \"\"; });\nvar actions = lines.filter(function (l) { return /待办|TODO|action|行动|负责|跟进/.test(l); });\nvar speakers = {};\nlines.forEach(function (l) {\n  var m = /^([A-Za-z\\u4e00-\\u9fff]{2,10})[:：]/.exec(l);\n  if (m) speakers[m[1]] = (speakers[m[1]] || 0) + 1;\n});\nvar md = \"# 会议纪要\\n\\n## 要点\\n\" + lines.slice(0, 10).map(function (l) { return \"- \" + l; }).join(\"\\n\");\nif (actions.length > 0) md += \"\\n\\n## 待办事项\\n\" + actions.map(function (a) { return \"- \" + a; }).join(\"\\n\");\nreturn { markdown: md, actionItems: actions, speakerCounts: speakers };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

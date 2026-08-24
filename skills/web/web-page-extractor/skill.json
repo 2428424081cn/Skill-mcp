@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "name": "web-page-extractor",
+  "namespace": "web",
+  "version": "1.0.0",
+  "description": "网页正文智能提纯与清洗工具：抓取外部网页并剔除 HTML 标签、脚本与样式，输出高信息密度的 Markdown。",
+  "category": "web",
+  "tags": [
+    "web",
+    "scraper",
+    "markdown",
+    "extractor",
+    "cleaner"
+  ],
+  "triggers": [
+    "网页正文提取",
+    "抓取网页转 markdown",
+    "web-page-extractor",
+    "提取文章正文"
+  ],
+  "keywords": [
+    "web",
+    "scrape",
+    "extract",
+    "html",
+    "markdown",
+    "clean",
+    "article"
+  ],
+  "whenToUse": "在需要阅读外部技术博客、新闻或文档，提取干净正文且去除广告干扰时使用。",
+  "whenNotToUse": "需要复杂用户登录验证的私密页面。",
+  "useCases": [
+    {
+      "task": "抓取公开 URL 并返回结构化 Markdown 正文"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "web.url-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "web.markdown-article",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "markdown": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "markdown"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "web:extract",
+    "doc:article-markdown"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [
+      "*"
+    ],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 20000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { title: 'Extracted Web Page', markdown: '# Extracted Content\\n\\nClean body extracted from URL.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

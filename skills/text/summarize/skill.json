@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "summarize",
+  "namespace": "text",
+  "version": "1.0.0",
+  "description": "把长文本压缩成简短摘要，适合会议记录、文章、文档的快速概览。",
+  "category": "text",
+  "tags": [
+    "summary",
+    "nlp"
+  ],
+  "triggers": [
+    "总结",
+    "摘要",
+    "summarize",
+    "太长不看",
+    "tldr",
+    "压缩"
+  ],
+  "keywords": [
+    "摘要",
+    "总结",
+    "缩短",
+    "概括"
+  ],
+  "whenToUse": "需要把长文本变短、快速抓住要点时使用；输出纯文本摘要。",
+  "whenNotToUse": "不要用于需要保留全部细节的场景（如法律文书、精确引用）；不生成多语言摘要。",
+  "useCases": [
+    {
+      "task": "把一篇 5000 字文章总结成 200 字"
+    },
+    {
+      "task": "会议记录太长，提取要点"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "maxLength": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string"
+          },
+          "length": {
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "summary"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "text:summary"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var text = String(input.text || input.content || \"\");\nvar max = Number(input.maxLength || 200);\nvar normalized = text.replace(/\\s+/g, \" \").trim();\nif (normalized.length <= max) return { summary: normalized, length: text.length, truncated: false };\nvar cut = normalized.slice(0, max);\nvar lastSpace = cut.lastIndexOf(\" \");\nif (lastSpace > max * 0.6) cut = cut.slice(0, lastSpace);\nreturn { summary: cut + \" ...\", length: text.length, truncated: true };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

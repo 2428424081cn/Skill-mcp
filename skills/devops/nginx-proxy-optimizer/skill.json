@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "name": "nginx-proxy-optimizer",
+  "namespace": "devops",
+  "version": "1.0.0",
+  "description": "Nginx 反向代理与网关性能调优：反向代理配置、Gzip 压缩、SSL/TLS 安全套件与防 DDoS 限流（Limit Req）。",
+  "category": "devops",
+  "tags": [
+    "nginx",
+    "proxy",
+    "gateway",
+    "ssl",
+    "gzip",
+    "load-balancer",
+    "performance"
+  ],
+  "triggers": [
+    "nginx 配置",
+    "优化 nginx",
+    "反向代理配置",
+    "nginx 限流",
+    "nginx-proxy-optimizer"
+  ],
+  "keywords": [
+    "nginx",
+    "proxy",
+    "ssl",
+    "http",
+    "gzip",
+    "upstream",
+    "server"
+  ],
+  "whenToUse": "编写生产级 Nginx 配置文件、配置 HTTPS 证书重定向、启用 Gzip/Brotli 压缩或防止恶意刷量限流时使用。",
+  "whenNotToUse": "非 Nginx 网关（如 Envoy / Traefik）。",
+  "useCases": [
+    {
+      "task": "生成包含 Gzip 压缩与安全 Headers 的 Nginx 反向代理配置"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "nginx.site-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string"
+          },
+          "upstreamPort": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "domain"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "nginx.config-snippet",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "config"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "devops:nginx",
+    "net:gateway"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { config: 'server { listen 80; server_name ' + input.domain + '; location / { proxy_pass http://127.0.0.1:3000; } }' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

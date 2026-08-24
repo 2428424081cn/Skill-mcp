@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "name": "readme-badge-generator",
+  "namespace": "doc",
+  "version": "1.0.0",
+  "description": "开源项目 README 美化与 Shields.io 徽章生成：生成构建状态、许可证、版本号、下载量与技术栈徽章排版。",
+  "category": "doc",
+  "tags": [
+    "readme",
+    "badges",
+    "shields-io",
+    "markdown",
+    "open-source",
+    "documentation"
+  ],
+  "triggers": [
+    "生成 readme 徽章",
+    "美化 readme",
+    "shields.io",
+    "readme-badge-generator",
+    "开源项目 readme"
+  ],
+  "keywords": [
+    "readme",
+    "badge",
+    "shields",
+    "markdown",
+    "github",
+    "license",
+    "stars"
+  ],
+  "whenToUse": "在为开源项目编写高颜值 README、展示技术栈标签或添加 CI 构建状态徽章时使用。",
+  "whenNotToUse": "普通无排版要求的文本。",
+  "useCases": [
+    {
+      "task": "为指定 GitHub 仓库生成整套 Shields.io 状态徽章"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "badge.spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "license": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "repo"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "badge.markdown",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "markdownBadges": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "markdownBadges"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "doc:badge-gen",
+    "doc:readme"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var r = input.repo || 'owner/repo'; return { markdownBadges: '[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

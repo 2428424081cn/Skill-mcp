@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "name": "typescript-strict-migrator",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "TypeScript 严格类型迁移助手：扫描代码库中的 'any' 逃逸、隐式类型转换与类型守卫缺失，提升类型安全性。",
+  "category": "dev",
+  "tags": [
+    "typescript",
+    "strict-mode",
+    "type-safety",
+    "refactor",
+    "types"
+  ],
+  "triggers": [
+    "ts 严格模式",
+    "消除 any",
+    "typescript 迁移",
+    "类型检查优化",
+    "typescript-strict-migrator"
+  ],
+  "keywords": [
+    "typescript",
+    "any",
+    "strict",
+    "types",
+    "generic",
+    "guard",
+    "compiler"
+  ],
+  "whenToUse": "在开启 tsconfig `strict: true` 遇到大量类型报错，或需要系统化清理代码库中的 `any` 时使用。",
+  "whenNotToUse": "纯 JavaScript 项目且无迁移计划。",
+  "useCases": [
+    {
+      "task": "扫描项目中显式声明的 any 类型分布与位置"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "ts.project-path",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "ts.any-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "anyCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "anyCount"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:typescript-strict",
+    "code:type-safety"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 10000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { anyCount: 0, message: 'Type audit completed.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

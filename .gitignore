@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Runtime Generated Telemetry & Cache Data
+data/*
+!data/.gitkeep
+
+# Temporary / Scratch Files
+skill下载/
+scratch/
+*.log
+*.sqlite
+*.sqlite-journal
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.env
+.env.*

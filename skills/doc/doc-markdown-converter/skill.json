@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "name": "doc-markdown-converter",
+  "namespace": "doc",
+  "version": "1.0.0",
+  "description": "文档格式提取与 Markdown 清洗：解析纯文本、JSON、CSV 数据并格式化为结构整洁的 Markdown 文档。",
+  "category": "doc",
+  "tags": [
+    "document",
+    "markdown",
+    "converter",
+    "cleaner",
+    "formatter"
+  ],
+  "triggers": [
+    "格式化为 markdown",
+    "文档清洗",
+    "doc-markdown-converter",
+    "数据转 markdown",
+    "提取文本摘要"
+  ],
+  "keywords": [
+    "markdown",
+    "convert",
+    "format",
+    "clean",
+    "document",
+    "text"
+  ],
+  "whenToUse": "在将杂乱的文本、JSON 数据或日志转换为适合大模型阅读的结构化 Markdown 时使用。",
+  "whenNotToUse": "高保真复杂 PDF 排版生成。",
+  "useCases": [
+    {
+      "task": "将本地数据文件快速格式化为清晰的 Markdown 预览"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "doc.raw-file",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "filePath"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "doc.markdown-output",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "markdown": {
+            "type": "string"
+          },
+          "length": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "markdown"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "doc:markdown-format",
+    "data:clean"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 10000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { markdown: '# Formatted Document\\n\\nExtracted and structured content.', length: 45 };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

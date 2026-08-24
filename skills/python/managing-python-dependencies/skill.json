@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "name": "managing-python-dependencies",
+  "namespace": "python",
+  "version": "1.0.0",
+  "description": "Ensures proper Python dependency management, avoiding global `pip install` and,adhering to project-specific tooling.,Use this skill if any of the following are true:,1. Attempting to run `pip install {package_name}`.,2. Python packages or dependencies need to be added or modified",
+  "category": "python",
+  "tags": [
+    "managing",
+    "python",
+    "dependencies"
+  ],
+  "triggers": [
+    "managing-python-dependencies",
+    "managing",
+    "python",
+    "Python 依赖",
+    "pip 管理",
+    "虚拟环境"
+  ],
+  "keywords": [
+    "managing",
+    "python",
+    "dependencies",
+    "Python 依赖",
+    "pip 管理",
+    "虚拟环境"
+  ],
+  "whenToUse": "Ensures proper Python dependency management, avoiding global `pip install` and,adhering to project-specific tooling.,Use this skill if any of the following are true:,1. Attempting to run `pip install {package_name}`.,2. Python packages or dependencies need to be added or modified",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "python:managing-python-dependencies"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

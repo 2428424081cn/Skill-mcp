@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "name": "translate",
+  "namespace": "text",
+  "version": "1.0.0",
+  "description": "中英互译演示实现，内置小词典，用于演示翻译类 skill 的检索与调用。",
+  "category": "text",
+  "tags": [
+    "translate",
+    "i18n"
+  ],
+  "triggers": [
+    "翻译",
+    "translate",
+    "中译英",
+    "英译中",
+    "汉译英"
+  ],
+  "keywords": [
+    "翻译",
+    "translate"
+  ],
+  "whenToUse": "需要对短语级文本做快速中英互译演示时使用。",
+  "whenNotToUse": "词典实现仅覆盖少量词；长文本、专业术语、正式翻译任务请改用真实翻译服务。",
+  "useCases": [
+    {
+      "task": "把 hello world 翻译成中文"
+    },
+    {
+      "task": "演示翻译 skill 如何被检索"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "translated": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "translated"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "text:translation"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var dict = { \"hello\": \"你好\", \"world\": \"世界\", \"thank\": \"谢谢\", \"you\": \"你\", \"good\": \"好\", \"你好\": \"hello\", \"世界\": \"world\", \"谢谢\": \"thank\", \"好\": \"good\" };\nvar text = String(input.text || \"\");\nvar words = text.split(/\\s+/);\nvar out = words.map(function (w) {\n  var k = w.toLowerCase().replace(/[^a-z\\u4e00-\\u9fff]/g, \"\");\n  return dict[k] || w;\n}).join(\" \");\nreturn { translated: out, direction: input.direction || \"auto\", note: \"dictionary-based demo translator; use a real translation service for production\" };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

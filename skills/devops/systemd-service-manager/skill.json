@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "name": "systemd-service-manager",
+  "namespace": "devops",
+  "version": "1.0.0",
+  "description": "Linux Systemd 服务单元守护进程配置生成：生成开机自启配置、日志重定向、失败自动重启策略与安全沙盒隔离。",
+  "category": "devops",
+  "tags": [
+    "systemd",
+    "linux",
+    "service",
+    "daemon",
+    "devops",
+    "sysadmin"
+  ],
+  "triggers": [
+    "生成 systemd 服务",
+    "linux 守护进程",
+    "systemd 配置",
+    "开机自启",
+    "systemd-service-manager"
+  ],
+  "keywords": [
+    "systemd",
+    "service",
+    "linux",
+    "daemon",
+    "restart",
+    "execstart"
+  ],
+  "whenToUse": "在部署生产 Linux 服务器后台常驻服务、配置 Node/Python 应用开机自启并设置自动崩溃拉起时使用。",
+  "whenNotToUse": "纯 Docker 容器内单进程运行（无需外层 systemd）。",
+  "useCases": [
+    {
+      "task": "生成标准安全的 Systemd .service 配置文件"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "systemd.spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "serviceName": {
+            "type": "string"
+          },
+          "execPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "serviceName",
+          "execPath"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "systemd.file-content",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "serviceContent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "serviceContent"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "devops:systemd",
+    "linux:daemon"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { serviceContent: '[Unit]\\nDescription=' + input.serviceName + '\\n[Service]\\nExecStart=' + input.execPath + '\\nRestart=always\\n[Install]\\nWantedBy=multi-user.target' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

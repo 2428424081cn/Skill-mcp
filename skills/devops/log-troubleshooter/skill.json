@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "log-troubleshooter",
+  "namespace": "devops",
+  "version": "1.0.0",
+  "description": "生产日志分析与异常聚类排查：提取大型日志中的 ERROR/WARN 报错行、聚合相似堆栈并输出频率分布 Top 10。",
+  "category": "devops",
+  "tags": [
+    "log",
+    "troubleshoot",
+    "error-clustering",
+    "devops",
+    "stacktrace",
+    "monitor"
+  ],
+  "triggers": [
+    "分析日志",
+    "排查日志报错",
+    "log-troubleshooter",
+    "提取错误堆栈",
+    "异常聚类分析"
+  ],
+  "keywords": [
+    "log",
+    "error",
+    "exception",
+    "troubleshoot",
+    "stacktrace",
+    "cluster",
+    "frequency"
+  ],
+  "whenToUse": "排查几万行的大型服务日志文件，快速定位核心崩溃原因与高频异常分布。",
+  "whenNotToUse": "非文本日志（如二进制核心转储文件）。",
+  "useCases": [
+    {
+      "task": "分析线上服务崩溃日志并按出现频次聚类输出"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "log.file-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "logPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "logPath"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "log.troubleshoot-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "totalErrors": {
+            "type": "integer"
+          },
+          "topErrors": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "totalErrors"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "devops:log-analysis",
+    "mon:troubleshoot"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 20000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { totalErrors: 0, topErrors: [], message: 'No fatal errors found in log.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

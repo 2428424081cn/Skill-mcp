@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "name": "clean-code-solid",
+  "namespace": "arch",
+  "version": "1.0.0",
+  "description": "Clean Code & SOLID 架构设计准则：单一职责、开闭原则、依赖倒置与控制认知复杂度",
+  "category": "arch",
+  "tags": [
+    "architecture",
+    "solid",
+    "clean-code",
+    "refactoring",
+    "patterns",
+    "rules"
+  ],
+  "triggers": [
+    "architecture",
+    "refactor",
+    "design",
+    "class",
+    "module",
+    "clean-code"
+  ],
+  "keywords": [
+    "architecture",
+    "solid",
+    "clean-code",
+    "refactoring",
+    "patterns",
+    "rules"
+  ],
+  "whenToUse": "在编写系统模块、类设计、函数抽象或重构遗留代码时必须遵循",
+  "whenNotToUse": "编写 10 行以内的单次运行临时验证脚本时无需过度分层",
+  "skillType": "rule",
+  "useCases": [
+    {
+      "task": "Clean Code & SOLID 架构设计准则：单一职责、开闭原则、依赖倒置与控制认知复杂度"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "arch:clean-code-solid"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "*"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { applied: true, rule: 'arch:clean-code-solid' };"
+  },
+  "status": "active"
+}

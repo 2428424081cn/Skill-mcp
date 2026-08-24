@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "name": "ml-best-practices",
+  "namespace": "ml",
+  "version": "1.0.0",
+  "description": "CRITICAL RULE: You MUST use this skill whenever the task involves any machine learning tasks or data analysis.,Use this skill if the user's prompt or requirements mention any of the following:,* Clustering,* Classification,* Regression,* Time series forecasting,* Statistical test",
+  "category": "ml",
+  "tags": [
+    "ml",
+    "best",
+    "practices"
+  ],
+  "triggers": [
+    "ml-best-practices",
+    "ml",
+    "best",
+    "机器学习最佳实践",
+    "模型评估",
+    "模型对比"
+  ],
+  "keywords": [
+    "ml",
+    "best",
+    "practices",
+    "机器学习最佳实践",
+    "模型评估",
+    "模型对比"
+  ],
+  "whenToUse": "CRITICAL RULE: You MUST use this skill whenever the task involves any machine learning tasks or data analysis.,Use this skill if the user's prompt or requirements mention any of the following:,* Clustering,* Classification,* Regression,* Time series forecasting,* Statistical test",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "ml:ml-best-practices"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

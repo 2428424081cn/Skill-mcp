@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "name": "accidental-data-loss-prevention",
+  "namespace": "safety",
+  "version": "1.0.0",
+  "description": "**STOP AND VERIFY**: Before running any command or tool that results in irreversible data loss, you MUST obtain explicit user consent.,When in doubt, ask. It is better to wait for confirmation than to accidentally delete production data or critical project assets.,Use this for:,S",
+  "category": "safety",
+  "tags": [
+    "accidental",
+    "data",
+    "loss",
+    "prevention"
+  ],
+  "triggers": [
+    "accidental-data-loss-prevention",
+    "accidental",
+    "data",
+    "数据丢失",
+    "误删",
+    "删除数据",
+    "drop table",
+    "不可逆操作",
+    "防止误操作"
+  ],
+  "keywords": [
+    "accidental",
+    "data",
+    "loss",
+    "prevention",
+    "数据丢失",
+    "误删",
+    "删除数据",
+    "drop table",
+    "不可逆操作",
+    "防止误操作"
+  ],
+  "whenToUse": "**STOP AND VERIFY**: Before running any command or tool that results in irreversible data loss, you MUST obtain explicit user consent.,When in doubt, ask. It is better to wait for confirmation than to accidentally delete production data or critical project assets.,Use this for:,S",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "safety:accidental-data-loss-prevention"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

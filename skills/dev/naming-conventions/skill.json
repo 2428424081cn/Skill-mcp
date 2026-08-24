@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "name": "naming-conventions",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "代码与变量命名规范守门人：强制统一 AI 代码命名风格，约束布尔谓词（is/has/should）、函数动词前缀、常量大写与多语言命名规范。",
+  "category": "dev",
+  "tags": [
+    "naming-conventions",
+    "code-style",
+    "refactor",
+    "clean-code",
+    "lint",
+    "pep8",
+    "typescript"
+  ],
+  "triggers": [
+    "命名规范",
+    "命名准则",
+    "变量命名",
+    "固定命名风格",
+    "naming-conventions",
+    "重命名规范",
+    "clean-code 命名",
+    "函数命名规则"
+  ],
+  "keywords": [
+    "naming",
+    "convention",
+    "variable",
+    "camelCase",
+    "snake_case",
+    "boolean",
+    "clean-code",
+    "style"
+  ],
+  "whenToUse": "在编写新代码、重构旧变量名、进行代码审查或为团队制定统一命名规范规则时使用。",
+  "whenNotToUse": "只进行数学计算而无需声明命名的场景。",
+  "useCases": [
+    {
+      "task": "审查代码中的变量命名是否符合 clean code 规范并给出重命名建议"
+    },
+    {
+      "task": "将混杂的命名风格统一转译为严格的目标风格（camelCase 或 snake_case）"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "naming.audit-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "codeSnippet": {
+            "type": "string",
+            "description": "待审查命名的代码片段"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "typescript",
+              "javascript",
+              "python",
+              "go"
+            ]
+          }
+        },
+        "required": [
+          "codeSnippet"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "naming.audit-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "badNamings": {
+            "type": "array"
+          },
+          "renamedCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "badNamings"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:naming-standards",
+    "code:clean-naming"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "\n      var code = input.codeSnippet || '';\n      var bads = [];\n      if (/\\b(var|let|const)\\s+(flag|status|check|valid)\\b/i.test(code)) {\n        bads.push({ original: 'flag/status', suggestion: 'isFlagged / hasValidStatus', reason: 'Booleans must have is/has/should prefix' });\n      }\n      return {\n        badNamings: bads,\n        renamedCode: code,\n        message: bads.length ? 'Found non-compliant variable names' : 'Naming adheres strictly to clean code standards.'\n      };\n    "
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Clean-Code-Guild",
+  "license": "MIT",
+  "skillType": "rule"
+}

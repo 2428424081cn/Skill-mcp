@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "name": "dbt-bigquery",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "for BigQuery. Use this skill whenever user asks for generating or modifying a dbt,model or project. Activate this skill when the user - Creates, modifies, or troubleshoots,**dbt models or pipelines** - Needs to **optimize SQL** within a dbt project - Is,**setting up a new dbt pro",
+  "category": "gcp",
+  "tags": [
+    "dbt",
+    "bigquery"
+  ],
+  "triggers": [
+    "dbt-bigquery",
+    "dbt",
+    "bigquery",
+    "dbt 模型",
+    "数据建模",
+    "ELT"
+  ],
+  "keywords": [
+    "dbt",
+    "bigquery",
+    "dbt 模型",
+    "数据建模",
+    "ELT"
+  ],
+  "whenToUse": "for BigQuery. Use this skill whenever user asks for generating or modifying a dbt,model or project. Activate this skill when the user - Creates, modifies, or troubleshoots,**dbt models or pipelines** - Needs to **optimize SQL** within a dbt project - Is,**setting up a new dbt pro",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:dbt-bigquery"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

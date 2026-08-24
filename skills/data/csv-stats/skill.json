@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "name": "csv-stats",
+  "namespace": "data",
+  "version": "1.0.0",
+  "description": "对表格数据做基础统计：行数、列名、数值列均值。依赖 csv-parse 提供表格输入。",
+  "category": "data",
+  "tags": [
+    "csv",
+    "stats"
+  ],
+  "triggers": [
+    "统计",
+    "均值",
+    "stats",
+    "csv stats",
+    "数据统计"
+  ],
+  "keywords": [
+    "统计",
+    "均值",
+    "平均"
+  ],
+  "whenToUse": "有表格数据（headers+rows）或 CSV 文本，需要行数与数值列均值。",
+  "whenNotToUse": "不做方差、分布、可视化等高级统计；非数值列自动跳过。",
+  "useCases": [
+    {
+      "task": "对销售 CSV 计算各列均值"
+    },
+    {
+      "task": "作为 markdown-report 的上游步骤"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "csv.table",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "csv": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "array"
+          },
+          "rows": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    "output": {
+      "semanticType": "csv.stats",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "columns": {
+            "type": "array"
+          },
+          "means": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "count",
+          "columns"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "data:csv-stats"
+  ],
+  "consumes": [
+    "data:csv-table"
+  ],
+  "dependencies": [
+    {
+      "name": "csv-parse",
+      "namespace": "data",
+      "versionRange": "^1.0.0",
+      "kind": "external"
+    }
+  ],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var headers, rows;\nif (Array.isArray(input.headers) && Array.isArray(input.rows)) { headers = input.headers; rows = input.rows; }\nelse if (typeof input.csv === \"string\") {\n  var text = input.csv;\n  var lines = text.split(/\\r?\\n/).filter(function (l) { return l.trim() !== \"\"; });\n  function splitRow(line) {\n    var out = []; var cur = \"\"; var inQ = false;\n    for (var i = 0; i < line.length; i++) {\n      var ch = line[i];\n      if (inQ) { if (ch === \"\\\"\") { if (line[i + 1] === \"\\\"\") { cur += \"\\\"\"; i++; } else { inQ = false; } } else { cur += ch; } }\n      else if (ch === \"\\\"\") { inQ = true; }\n      else if (ch === \",\") { out.push(cur); cur = \"\"; }\n      else { cur += ch; }\n    }\n    out.push(cur);\n    return out;\n  }\n  var parsed = lines.map(splitRow);\n  headers = parsed[0] || []; rows = parsed.slice(1);\n} else { throw new Error(\"csv-stats needs headers+rows or csv\"); }\nvar means = {};\nvar count = rows.length;\n(headers || []).forEach(function (h, i) {\n  var nums = rows.map(function (r) { return Number(r[i]); }).filter(function (n) { return !isNaN(n); });\n  if (nums.length > 0) {\n    var s = 0; nums.forEach(function (n) { s += n; });\n    means[h] = Math.round((s / nums.length) * 100) / 100;\n  }\n});\nreturn { count: count, columns: headers, means: means };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "name": "bigquery-sql",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "Provides BigQuery SQL query optimization techniques, execution best practices, and performance tuning rules for high-efficiency querying. Use when optimizing BigQuery SQL queries, reducing query costs, or designing performant SQL transformations.",
+  "category": "gcp",
+  "tags": [
+    "bigquery",
+    "sql"
+  ],
+  "triggers": [
+    "bigquery-sql",
+    "bigquery",
+    "sql",
+    "SQL 优化",
+    "查询优化",
+    "BigQuery 查询",
+    "慢查询"
+  ],
+  "keywords": [
+    "bigquery",
+    "sql",
+    "SQL 优化",
+    "查询优化",
+    "BigQuery 查询",
+    "慢查询"
+  ],
+  "whenToUse": "Provides BigQuery SQL query optimization techniques, execution best practices, and performance tuning rules for high-efficiency querying. Use when optimizing BigQuery SQL queries, reducing query costs, or designing performant SQL transformations.",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:bigquery-sql"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

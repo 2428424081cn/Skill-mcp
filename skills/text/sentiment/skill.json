@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "name": "sentiment",
+  "namespace": "text",
+  "version": "1.0.0",
+  "description": "基于关键词的情感倾向分析（正向/负向/中性），适合快速判断评论与反馈。",
+  "category": "text",
+  "tags": [
+    "sentiment",
+    "nlp"
+  ],
+  "triggers": [
+    "情感",
+    "情绪",
+    "sentiment",
+    "正负面",
+    "好评差评"
+  ],
+  "keywords": [
+    "情感分析",
+    "情绪",
+    "sentiment"
+  ],
+  "whenToUse": "快速判断一段用户反馈、评论的粗略情感倾向。",
+  "whenNotToUse": "关键词法精度有限，不适合讽刺、反语与专业舆情分析场景。",
+  "useCases": [
+    {
+      "task": "判断一条商品评论是好评还是差评"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "json",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "score",
+          "label"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "text:sentiment"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var pos = [\"好\", \"优秀\", \"满意\", \"赞\", \"great\", \"good\", \"excellent\", \"love\", \"happy\", \"推荐\"];\nvar neg = [\"差\", \"糟\", \"坏\", \"失望\", \"投诉\", \"bad\", \"poor\", \"terrible\", \"hate\", \"bug\", \"错误\", \"失败\"];\nvar text = String(input.text || \"\").toLowerCase();\nvar score = 0;\npos.forEach(function (w) { if (text.indexOf(w) >= 0) score += 1; });\nneg.forEach(function (w) { if (text.indexOf(w) >= 0) score -= 1; });\nvar label = score > 0 ? \"positive\" : score < 0 ? \"negative\" : \"neutral\";\nreturn { score: score, label: label, note: \"keyword-based demo sentiment\" };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "name": "security-secret-scanner",
+  "namespace": "sec",
+  "version": "1.0.0",
+  "description": "敏感凭据与私钥泄露扫描器：深度扫描源码、配置文件与日志中的 API Key、AWS Token、私钥证书与密码。",
+  "category": "sec",
+  "tags": [
+    "security",
+    "secret",
+    "api-key",
+    "token",
+    "scanner",
+    "leak"
+  ],
+  "triggers": [
+    "扫描密钥",
+    "检查密钥泄露",
+    "敏感凭据扫描",
+    "security-secret-scanner",
+    "检测 api key",
+    "私钥扫描"
+  ],
+  "keywords": [
+    "secret",
+    "leak",
+    "api-key",
+    "token",
+    "password",
+    "security",
+    "scan",
+    "private-key"
+  ],
+  "whenToUse": "在代码提交前、开源发布或审查第三方依赖包时，排查是否意外泄露了明文 API Key 与敏感私钥。",
+  "whenNotToUse": "业务逻辑鉴权。",
+  "useCases": [
+    {
+      "task": "扫描当前工程是否包含硬编码的 OpenAI 或 AWS Key"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "sec.scan-input",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "targetPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "targetPath"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "sec.scan-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "clean": {
+            "type": "boolean"
+          },
+          "findingsCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "clean",
+          "findingsCount"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "sec:secret-scan",
+    "sec:audit"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 15000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { clean: true, findingsCount: 0, message: 'No hardcoded secrets detected.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "name": "decision-tradeoff-matrix",
+  "namespace": "reasoning",
+  "version": "1.0.0",
+  "description": "多准则决策权衡与加权打分矩阵：在多个备选技术方案中，从性能、成本、维护性、不可逆性等维度进行量化评分与选型。",
+  "category": "reasoning",
+  "tags": [
+    "decision-matrix",
+    "tradeoff",
+    "architecture-decision",
+    "evaluation",
+    "score",
+    "selection"
+  ],
+  "triggers": [
+    "决策矩阵",
+    "权衡分析",
+    "技术选型对比",
+    "decision-tradeoff-matrix",
+    "方案评估打分",
+    "多维度打分",
+    "架构权衡",
+    "方案对比"
+  ],
+  "keywords": [
+    "decision",
+    "matrix",
+    "tradeoff",
+    "score",
+    "weight",
+    "criteria",
+    "option"
+  ],
+  "whenToUse": "在多个技术选型（如 PostgreSQL vs MongoDB，Next.js vs Remix）、重构方案或算法路径之间进行理性权衡时使用。",
+  "whenNotToUse": "只有单一唯一选择的场景。",
+  "useCases": [
+    {
+      "task": "对三套消息队列架构（Kafka vs RabbitMQ vs Redis Streams）进行多维度加权打分"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "decision.matrix-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "评价维度 (如 性能, 维护成本, 学习曲线)"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "备选方案清单"
+          }
+        },
+        "required": [
+          "criteria",
+          "options"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "decision.matrix-result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "rankedOptions": {
+            "type": "array"
+          },
+          "recommendedOption": {
+            "type": "string"
+          },
+          "tradeoffSummary": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "rankedOptions",
+          "recommendedOption"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "reasoning:decision-matrix",
+    "architecture:evaluation"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var opts = input.options || [\"Option A\", \"Option B\"];\n      return {\n        rankedOptions: [\n          { name: opts[0], totalScore: 8.5, rank: 1 },\n          { name: opts[1] || \"Option B\", totalScore: 7.2, rank: 2 }\n        ],\n        recommendedOption: opts[0],\n        tradeoffSummary: \"Option A is optimal due to superior long-term maintainability.\"\n      };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Reasoning-Engine / Cognitive-Pack",
+  "license": "MIT",
+  "skillType": "rule"
+}

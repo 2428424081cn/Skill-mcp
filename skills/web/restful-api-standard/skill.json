@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "name": "restful-api-standard",
+  "namespace": "web",
+  "version": "1.0.0",
+  "description": "企业级 RESTful API 设计准则：强制 RFC 规范谓词语义、统一响应信封、幂等性与标准 HTTP 状态码",
+  "category": "web",
+  "tags": [
+    "api",
+    "rest",
+    "http",
+    "openapi",
+    "standards",
+    "rules"
+  ],
+  "triggers": [
+    "api",
+    "rest",
+    "endpoint",
+    "route",
+    "http",
+    "controller",
+    "service"
+  ],
+  "keywords": [
+    "api",
+    "rest",
+    "http",
+    "openapi",
+    "standards",
+    "rules"
+  ],
+  "whenToUse": "在设计、编写或重构 HTTP / RESTful API 接口时必须遵守",
+  "whenNotToUse": "编写 CLI 命令行工具或离线脚本时无需遵守",
+  "skillType": "rule",
+  "useCases": [
+    {
+      "task": "企业级 RESTful API 设计准则：强制 RFC 规范谓词语义、统一响应信封、幂等性与标准 HTTP 状态码"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "web:restful-api-standard"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "*"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { applied: true, rule: 'web:restful-api-standard' };"
+  },
+  "status": "active"
+}

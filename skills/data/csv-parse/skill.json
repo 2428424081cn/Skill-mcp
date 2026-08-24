@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "name": "csv-parse",
+  "namespace": "data",
+  "version": "1.0.0",
+  "description": "把 CSV 文本解析成结构化表格（headers + rows），支持引号转义。",
+  "category": "data",
+  "tags": [
+    "csv",
+    "parser"
+  ],
+  "triggers": [
+    "csv",
+    "解析",
+    "parse csv",
+    "逗号分隔",
+    "表格数据"
+  ],
+  "keywords": [
+    "csv",
+    "解析",
+    "表格"
+  ],
+  "whenToUse": "拿到原始 CSV 文本，需要转成结构化表格供后续统计或渲染。",
+  "whenNotToUse": "不处理 Excel(xlsx)、TSV、多字符分隔符；超大文件（>50MB）建议用流式解析。",
+  "useCases": [
+    {
+      "task": "解析导出数据里的 CSV 字符串"
+    },
+    {
+      "task": "作为 csv-stats 的上游步骤"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "csv",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "csv": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "csv"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "csv.table",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "headers": {
+            "type": "array"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "array"
+            }
+          },
+          "count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "headers",
+          "rows"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "data:csv-table"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var text = String(input.csv || \"\");\nvar lines = text.split(/\\r?\\n/).filter(function (l) { return l.trim() !== \"\"; });\nfunction splitRow(line) {\n  var out = []; var cur = \"\"; var inQ = false;\n  for (var i = 0; i < line.length; i++) {\n    var ch = line[i];\n    if (inQ) {\n      if (ch === \"\\\"\") { if (line[i + 1] === \"\\\"\") { cur += \"\\\"\"; i++; } else { inQ = false; } }\n      else { cur += ch; }\n    } else if (ch === \"\\\"\") { inQ = true; }\n    else if (ch === \",\") { out.push(cur); cur = \"\"; }\n    else { cur += ch; }\n  }\n  out.push(cur);\n  return out;\n}\nvar rows = lines.map(splitRow);\nreturn { headers: rows[0] || [], rows: rows.slice(1), count: Math.max(0, rows.length - 1) };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "name": "fastapi-rest-service",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "FastAPI / Pydantic v2 高性能异步后端架构：依赖注入（Depends）、异步路由、自动校验与异常中间件规范。",
+  "category": "dev",
+  "tags": [
+    "python",
+    "fastapi",
+    "pydantic",
+    "backend",
+    "async",
+    "rest-api"
+  ],
+  "triggers": [
+    "fastapi 架构",
+    "fastapi 规范",
+    "pydantic v2",
+    "python 后端",
+    "fastapi-rest-service"
+  ],
+  "keywords": [
+    "fastapi",
+    "python",
+    "pydantic",
+    "async",
+    "router",
+    "backend",
+    "api"
+  ],
+  "whenToUse": "在开发 Python FastAPI 微服务、设计 API 路由分组或配置 Pydantic v2 数据模型时使用。",
+  "whenNotToUse": "Django 传统模版渲染应用。",
+  "useCases": [
+    {
+      "task": "生成标准符合最佳实践的 FastAPI 路由与 CRUD 样板代码"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "fastapi.spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "modelName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "modelName"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "fastapi.code",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "routerCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "routerCode"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:fastapi",
+    "code:python-backend"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var m = input.modelName || 'Item'; return { routerCode: 'from fastapi import APIRouter, Depends\\nrouter = APIRouter(prefix=\"/' + m.toLowerCase() + 's\")\\n' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

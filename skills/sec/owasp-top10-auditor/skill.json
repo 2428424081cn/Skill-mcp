@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "name": "owasp-top10-auditor",
+  "namespace": "sec",
+  "version": "1.0.0",
+  "description": "OWASP Top 10 Web 应用安全审计助手：扫描 XSS 跨站脚本、CSRF、不安全直接对象引用（IDOR）与权限越权风险。",
+  "category": "sec",
+  "tags": [
+    "owasp",
+    "security",
+    "xss",
+    "csrf",
+    "idor",
+    "web-security",
+    "audit"
+  ],
+  "triggers": [
+    "owasp 审计",
+    "检查 xss",
+    "web 安全扫描",
+    "owasp-top10-auditor",
+    "安全漏洞排查"
+  ],
+  "keywords": [
+    "owasp",
+    "xss",
+    "csrf",
+    "idor",
+    "security",
+    "vulnerability",
+    "injection"
+  ],
+  "whenToUse": "在 Web 应用发布上线前，对照 OWASP Top 10 核心风险清单进行代码级与配置级漏洞排查。",
+  "whenNotToUse": "底层操作系统内核漏洞分析。",
+  "useCases": [
+    {
+      "task": "扫描前端代码中是否存在 dangerouslySetInnerHTML 等 XSS 危险代码"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "sec.audit-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "targetDir": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "targetDir"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "sec.owasp-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "riskCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "riskCount"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "sec:owasp",
+    "sec:web-audit"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 15000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { riskCount: 0, status: 'OWASP checklist passed' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

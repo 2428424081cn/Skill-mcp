@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "name": "package-bundle-analyzer",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "前端打包体积分析与依赖瘦身：定位超大第三方包、检查 Tree-Shaking 冗余与重复引入。",
+  "category": "dev",
+  "tags": [
+    "bundle",
+    "webpack",
+    "vite",
+    "rollup",
+    "optimization",
+    "performance"
+  ],
+  "triggers": [
+    "分析打包体积",
+    "前端瘦身",
+    "bundle 分析",
+    "package-bundle-analyzer",
+    "优化打包大小"
+  ],
+  "keywords": [
+    "bundle",
+    "size",
+    "analyzer",
+    "vite",
+    "webpack",
+    "dependencies",
+    "minify"
+  ],
+  "whenToUse": "在前端项目打包体积过大、首屏加载缓慢或需要剔除未使用的重型依赖（如 lodash/moment）时使用。",
+  "whenNotToUse": "纯后端命令行脚本。",
+  "useCases": [
+    {
+      "task": "扫描 package.json 中的潜在重型依赖并推荐轻量替代方案"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "pkg.json-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "pkgPath": {
+            "type": "string"
+          }
+        },
+        "required": []
+      }
+    },
+    "output": {
+      "semanticType": "pkg.size-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "heavyDeps": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "heavyDeps"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:bundle-analysis",
+    "code:frontend-perf"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 10000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { heavyDeps: [], suggestions: 'Consider replacing moment with dayjs/date-fns.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

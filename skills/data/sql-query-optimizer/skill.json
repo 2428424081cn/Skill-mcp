@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "name": "sql-query-optimizer",
+  "namespace": "data",
+  "version": "1.0.0",
+  "description": "SQL 性能优化与慢查询诊断：分析多表 JOIN、全表扫描反模式、索引覆盖与复杂查询重写建议。",
+  "category": "data",
+  "tags": [
+    "sql",
+    "database",
+    "optimizer",
+    "performance",
+    "indexing",
+    "slow-query"
+  ],
+  "triggers": [
+    "优化 sql",
+    "sql 性能分析",
+    "慢查询优化",
+    "sql 索引建议",
+    "sql-query-optimizer"
+  ],
+  "keywords": [
+    "sql",
+    "query",
+    "optimize",
+    "index",
+    "join",
+    "explain",
+    "performance"
+  ],
+  "whenToUse": "在遇到慢 SQL 查询、大表分页卡顿或需要为数据库表设计最优化复合索引时使用。",
+  "whenNotToUse": "非关系型键值数据库（如 Redis）。",
+  "useCases": [
+    {
+      "task": "分析长 SQL 查询中的全表扫描风险并输出重构建议"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "sql.raw-query",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sql"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "sql.opt-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "suggestions": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "suggestions"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "data:sql-optimize",
+    "db:tuning"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { suggestions: ['Avoid SELECT *; specify only needed columns.', 'Ensure WHERE column is indexed.'] };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

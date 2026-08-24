@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "name": "fetch-page",
+  "namespace": "web",
+  "version": "1.0.0",
+  "description": "抓取网页并提取标题与正文长度，需要网络权限（默认策略为拒绝，须授权）。",
+  "category": "web",
+  "tags": [
+    "web",
+    "http"
+  ],
+  "triggers": [
+    "抓取",
+    "网页",
+    "fetch",
+    "爬虫",
+    "url",
+    "抓页面"
+  ],
+  "keywords": [
+    "抓取",
+    "网页",
+    "fetch"
+  ],
+  "whenToUse": "需要获取一个公开网页的基本信息（标题、长度、状态码）。",
+  "whenNotToUse": "需要登录态、动态渲染页面的场景；本 skill 需要网络权限，默认被策略拒绝。",
+  "useCases": [
+    {
+      "task": "抓取一个 URL 的标题与长度"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "url",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "html",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "length": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "capabilities": [
+    "web:page-fetch"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [
+      "*"
+    ],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 15000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "node",
+    "file": "src/fetch.mjs"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

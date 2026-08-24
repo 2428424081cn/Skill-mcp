@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "name": "markdown-report",
+  "namespace": "report",
+  "version": "1.0.0",
+  "description": "把统计结果渲染成 Markdown 报表，依赖 csv-stats 的统计输出。",
+  "category": "report",
+  "tags": [
+    "report",
+    "markdown"
+  ],
+  "triggers": [
+    "报表",
+    "报告",
+    "markdown",
+    "report",
+    "生成报表"
+  ],
+  "keywords": [
+    "报表",
+    "markdown",
+    "报告"
+  ],
+  "whenToUse": "已有统计数据（行数/列/均值），需要输出可读的 Markdown 报表。",
+  "whenNotToUse": "不做图表、PDF 导出；输入需为 csv-stats 的输出结构或等价结构。",
+  "useCases": [
+    {
+      "task": "把销售统计渲染成 Markdown 报表"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "csv.stats",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "columns": {
+            "type": "array"
+          },
+          "means": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "count"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "markdown",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "markdown": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "markdown"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "report:markdown"
+  ],
+  "consumes": [
+    "data:csv-stats"
+  ],
+  "dependencies": [
+    {
+      "name": "csv-stats",
+      "namespace": "data",
+      "versionRange": "^1.0.0",
+      "kind": "external"
+    }
+  ],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var title = String(input.title || \"数据报表\");\nvar count = Number(input.count || 0);\nvar columns = Array.isArray(input.columns) ? input.columns : [];\nvar means = input.means || {};\nvar lines = [\"# \" + title, \"\", \"- 记录数: \" + count, \"- 列: \" + columns.join(\", \")];\nvar keys = Object.keys(means);\nif (keys.length > 0) {\n  lines.push(\"\", \"| 列 | 均值 |\", \"| --- | --- |\");\n  keys.forEach(function (k) { lines.push(\"| \" + k + \" | \" + means[k] + \" |\"); });\n}\nreturn { markdown: lines.join(\"\\n\") };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

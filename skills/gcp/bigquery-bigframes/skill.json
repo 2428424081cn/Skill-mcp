@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "name": "bigquery-bigframes",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "Generates Python code using BigQuery DataFrames (BigFrames), the pandas/scikit-learn-style API over BigQuery. Use when writing BigFrames code or doing pandas-style dataframe/ML work against BigQuery (e.g. in a notebook). Don't use for SQL-first workflows or the google-cloud-bigqu",
+  "category": "gcp",
+  "tags": [
+    "bigquery",
+    "bigframes"
+  ],
+  "triggers": [
+    "bigquery-bigframes",
+    "bigquery",
+    "bigframes",
+    "BigFrames",
+    "DataFrame",
+    "pandas"
+  ],
+  "keywords": [
+    "bigquery",
+    "bigframes",
+    "BigFrames",
+    "DataFrame",
+    "pandas"
+  ],
+  "whenToUse": "Generates Python code using BigQuery DataFrames (BigFrames), the pandas/scikit-learn-style API over BigQuery. Use when writing BigFrames code or doing pandas-style dataframe/ML work against BigQuery (e.g. in a notebook). Don't use for SQL-first workflows or the google-cloud-bigqu",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:bigquery-bigframes"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

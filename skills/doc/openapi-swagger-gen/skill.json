@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "name": "openapi-swagger-gen",
+  "namespace": "doc",
+  "version": "1.0.0",
+  "description": "OpenAPI 3.0 / Swagger 接口契约生成与校验：从数据结构自动生成标准 OpenAPI Spec，便于前端与客户端对接。",
+  "category": "doc",
+  "tags": [
+    "openapi",
+    "swagger",
+    "api-spec",
+    "contract",
+    "documentation"
+  ],
+  "triggers": [
+    "生成 openapi",
+    "swagger 生成",
+    "api 文档规范",
+    "openapi-swagger-gen"
+  ],
+  "keywords": [
+    "openapi",
+    "swagger",
+    "api",
+    "spec",
+    "schema",
+    "json",
+    "yaml"
+  ],
+  "whenToUse": "在为微服务撰写对外 API 规范文档、生成 SDK 或进行前后端接口契约对接时使用。",
+  "whenNotToUse": "非 RESTful 协议（如 gRPC / GraphQL）。",
+  "useCases": [
+    {
+      "task": "根据接口入参出参生成 OpenAPI 3.0 JSON 描述文件"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "api.endpoint-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "openapi.spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "openapi": {
+            "type": "string"
+          },
+          "spec": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "openapi"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "doc:openapi",
+    "api:contract"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { openapi: '3.0.0', spec: { info: { title: 'Generated API', version: '1.0.0' } } };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "name": "agy-customizations",
+  "namespace": "agent",
+  "version": "1.0.0",
+  "description": "Comprehensive guide and reference for the Antigravity Customization System.,Use to explain how customizations work, their loading priority, discovery mechanisms,,and to guide the creation of skills, rules, plugins, hooks, and MCP servers.",
+  "category": "agent",
+  "tags": [
+    "agy",
+    "customizations"
+  ],
+  "triggers": [
+    "agy-customizations",
+    "agy",
+    "customizations",
+    "Antigravity 定制",
+    "AG 配置",
+    "hooks 配置"
+  ],
+  "keywords": [
+    "agy",
+    "customizations",
+    "Antigravity 定制",
+    "AG 配置",
+    "hooks 配置"
+  ],
+  "whenToUse": "Comprehensive guide and reference for the Antigravity Customization System.,Use to explain how customizations work, their loading priority, discovery mechanisms,,and to guide the creation of skills, rules, plugins, hooks, and MCP servers.",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "agent:agy-customizations"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "user",
+  "license": "Apache-2.0"
+}

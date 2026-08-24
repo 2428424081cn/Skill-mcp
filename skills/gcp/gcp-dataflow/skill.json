@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "name": "gcp-dataflow",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "Guides writing, packaging, executing, and troubleshooting Apache Beam,pipelines on Dataflow. Use when creating new pipelines, configuring Flex,Templates, or analyzing performance of Dataflow jobs. Capabilities include,Java/Python/Go setup, Cloud Build integration, and deep diagno",
+  "category": "gcp",
+  "tags": [
+    "gcp",
+    "dataflow"
+  ],
+  "triggers": [
+    "gcp-dataflow",
+    "gcp",
+    "dataflow",
+    "数据流",
+    "流式作业",
+    "管道调试",
+    "Dataflow 调试",
+    "Apache Beam"
+  ],
+  "keywords": [
+    "gcp",
+    "dataflow",
+    "数据流",
+    "流式作业",
+    "管道调试",
+    "Dataflow 调试",
+    "Apache Beam"
+  ],
+  "whenToUse": "Guides writing, packaging, executing, and troubleshooting Apache Beam,pipelines on Dataflow. Use when creating new pipelines, configuring Flex,Templates, or analyzing performance of Dataflow jobs. Capabilities include,Java/Python/Go setup, Cloud Build integration, and deep diagno",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:gcp-dataflow"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

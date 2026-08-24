@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "name": "ci-cd-github-actions",
+  "namespace": "devops",
+  "version": "1.0.0",
+  "description": "GitHub Actions CI/CD 自动化流水线生成与调优：依赖缓存加速、多版本矩阵测试、安全构建与自动发布。",
+  "category": "devops",
+  "tags": [
+    "github-actions",
+    "ci-cd",
+    "pipeline",
+    "devops",
+    "automation",
+    "workflow"
+  ],
+  "triggers": [
+    "github actions",
+    "配置 ci 流水线",
+    "ci/cd 编写",
+    "github 自动化构建",
+    "ci-cd-github-actions"
+  ],
+  "keywords": [
+    "github",
+    "actions",
+    "ci",
+    "cd",
+    "yaml",
+    "pipeline",
+    "cache",
+    "build"
+  ],
+  "whenToUse": "为新项目编写 GitHub Actions 工作流（Lint, Test, Docker Build, Release）或优化已有 CI 构建速度时使用。",
+  "whenNotToUse": "自建 Jenkins Groovy Pipeline 编写。",
+  "useCases": [
+    {
+      "task": "生成包含 Node.js / Python 依赖缓存的 GitHub Actions CI 工作流"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "cicd.spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "projectType": {
+            "type": "string",
+            "enum": [
+              "node",
+              "python",
+              "docker"
+            ]
+          }
+        },
+        "required": [
+          "projectType"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "cicd.yaml",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "workflowYaml": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "workflowYaml"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "devops:github-actions",
+    "ci:pipeline"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { workflowYaml: 'name: CI\\non: [push]\\njobs:\\n  build:\\n    runs-on: ubuntu-latest\\n' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

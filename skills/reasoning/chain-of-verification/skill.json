@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "name": "chain-of-verification",
+  "namespace": "reasoning",
+  "version": "1.0.0",
+  "description": "Chain-of-Verification (CoVe) 验证链准则：生成草案 -> 提出自验问题 -> 独立求证 -> 纠偏合成四步验证闭环",
+  "category": "reasoning",
+  "tags": [
+    "reasoning",
+    "cove",
+    "verification",
+    "hallucination-prevention",
+    "rules"
+  ],
+  "triggers": [
+    "verify",
+    "fact",
+    "logic",
+    "check",
+    "architecture",
+    "solve",
+    "math",
+    "analysis"
+  ],
+  "keywords": [
+    "reasoning",
+    "cove",
+    "verification",
+    "hallucination-prevention",
+    "rules"
+  ],
+  "whenToUse": "在处理复杂技术选型、高风险算法推导或易产生幻觉的关键事实推断时执行",
+  "whenNotToUse": "简单文本格式化或固定样板代码生成时无需多轮验证",
+  "skillType": "rule",
+  "useCases": [
+    {
+      "task": "Chain-of-Verification (CoVe) 验证链准则：生成草案 -> 提出自验问题 -> 独立求证 -> 纠偏合成四步验证闭环"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "reasoning:chain-of-verification"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "*"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { applied: true, rule: 'reasoning:chain-of-verification' };"
+  },
+  "status": "active"
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "name": "commit-msg",
+  "namespace": "git",
+  "version": "1.0.0",
+  "description": "根据变更描述生成 Conventional Commits 风格的提交信息。",
+  "category": "git",
+  "tags": [
+    "git",
+    "commit"
+  ],
+  "triggers": [
+    "commit",
+    "提交信息",
+    "git commit",
+    "conventional"
+  ],
+  "keywords": [
+    "commit",
+    "提交"
+  ],
+  "whenToUse": "有变更摘要，需要规范格式的提交信息。",
+  "whenNotToUse": "规则匹配有限，复杂变更仍建议人工拟写。",
+  "useCases": [
+    {
+      "task": "根据一句话变更描述生成 feat:/fix: 提交信息"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "diffSummary": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "diffSummary"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "git:commit-msg"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var text = String(input.diffSummary || input.text || \"\");\nvar lower = text.toLowerCase();\nvar type = \"chore\";\nif (/fix|bug|修复|补丁/.test(lower)) type = \"fix\";\nelse if (/feat|feature|add|新增|功能/.test(lower)) type = \"feat\";\nelse if (/doc|文档|readme/.test(lower)) type = \"docs\";\nelse if (/test|测试/.test(lower)) type = \"test\";\nelse if (/refactor|重构/.test(lower)) type = \"refactor\";\nelse if (/perf|性能/.test(lower)) type = \"perf\";\nvar subject = text.replace(/\\s+/g, \" \").trim().slice(0, 60);\nreturn { message: type + \": \" + subject, type: type, note: \"rule-based suggestion; review before using\" };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

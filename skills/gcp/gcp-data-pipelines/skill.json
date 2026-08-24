@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "name": "gcp-data-pipelines",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "on Google Cloud. Guides users to the appropriate skill for dbt, Dataflow (Apache,Beam), Dataform, Spark (Dataproc Serverless), BigQuery Data Transfer Service (DTS),or orchestration pipeline using Cloud Composer. Clarify requirements and resolve,ambiguity for creating, updating an",
+  "category": "gcp",
+  "tags": [
+    "gcp",
+    "data",
+    "pipelines"
+  ],
+  "triggers": [
+    "gcp-data-pipelines",
+    "gcp",
+    "data",
+    "数据管道",
+    "ETL",
+    "数据集成"
+  ],
+  "keywords": [
+    "gcp",
+    "data",
+    "pipelines",
+    "数据管道",
+    "ETL",
+    "数据集成"
+  ],
+  "whenToUse": "on Google Cloud. Guides users to the appropriate skill for dbt, Dataflow (Apache,Beam), Dataform, Spark (Dataproc Serverless), BigQuery Data Transfer Service (DTS),or orchestration pipeline using Cloud Composer. Clarify requirements and resolve,ambiguity for creating, updating an",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:gcp-data-pipelines"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

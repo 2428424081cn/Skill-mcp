@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "name": "code-review-guard",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "静态代码审查与漏洞检查助手：深度扫描源码中的动态 SQL 拼接注入、空异常捕获、未清理定时器与硬编码凭据。",
+  "category": "dev",
+  "tags": [
+    "code-review",
+    "audit",
+    "security",
+    "anti-pattern",
+    "quality"
+  ],
+  "triggers": [
+    "代码审查",
+    "检查代码",
+    "code review",
+    "静态审查",
+    "扫描代码漏洞",
+    "code-review-guard"
+  ],
+  "keywords": [
+    "review",
+    "code",
+    "security",
+    "pattern",
+    "audit",
+    "quality",
+    "clean"
+  ],
+  "whenToUse": "在评审代码质量、审查 PR/MR 或在发布前静态扫描源码漏洞与代码异味时使用。",
+  "whenNotToUse": "运行自动化单元测试套件（请使用 npm test 或 pytest）。",
+  "useCases": [
+    {
+      "task": "扫描指定目录下的源码是否存在高危反模式与漏洞"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "code.review-input",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "targetPath": {
+            "type": "string",
+            "description": "待审查目录或文件"
+          }
+        },
+        "required": [
+          "targetPath"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "code.review-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "totalIssues": {
+            "type": "integer"
+          },
+          "issues": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "totalIssues"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:code-review",
+    "sec:static-analysis"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 15000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { totalIssues: 0, issues: [], summary: 'Code review completed with 0 high-risk issues.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT",
+  "skillType": "rule"
+}

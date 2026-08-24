@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "name": "modern-ui-aesthetics",
+  "namespace": "design",
+  "version": "1.0.0",
+  "description": "现代 Web 美学与交互设计准则：强制 Design Tokens、微交互动画、WCAG 无障碍与高级视觉排版",
+  "category": "design",
+  "tags": [
+    "ui",
+    "ux",
+    "css",
+    "design-system",
+    "aesthetics",
+    "frontend",
+    "rules"
+  ],
+  "triggers": [
+    "ui",
+    "frontend",
+    "css",
+    "html",
+    "react",
+    "vue",
+    "web",
+    "design"
+  ],
+  "keywords": [
+    "ui",
+    "ux",
+    "css",
+    "design-system",
+    "aesthetics",
+    "frontend",
+    "rules"
+  ],
+  "whenToUse": "在编写前端页面、HTML/CSS 样式与 UI 组件时必须严格遵循",
+  "whenNotToUse": "编写纯后端无界面服务或底层数据管道时无需遵循",
+  "skillType": "rule",
+  "useCases": [
+    {
+      "task": "现代 Web 美学与交互设计准则：强制 Design Tokens、微交互动画、WCAG 无障碍与高级视觉排版"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "design:modern-ui-aesthetics"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "*"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { applied: true, rule: 'design:modern-ui-aesthetics' };"
+  },
+  "status": "active"
+}

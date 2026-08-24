@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "notebook-guidance",
+  "namespace": "ml",
+  "version": "1.0.0",
+  "description": "This skill guides the use of Jupyter notebooks for data analysis, exploration, and visualization, particularly with BigQuery. It outlines best practices for notebook execution and validation (supporting both cell-by-cell execution and full notebook generation depending on tool av",
+  "category": "ml",
+  "tags": [
+    "notebook",
+    "guidance"
+  ],
+  "triggers": [
+    "notebook-guidance",
+    "notebook",
+    "guidance",
+    "Jupyter",
+    "笔记本分析"
+  ],
+  "keywords": [
+    "notebook",
+    "guidance",
+    "Jupyter",
+    "笔记本分析"
+  ],
+  "whenToUse": "This skill guides the use of Jupyter notebooks for data analysis, exploration, and visualization, particularly with BigQuery. It outlines best practices for notebook execution and validation (supporting both cell-by-cell execution and full notebook generation depending on tool av",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "ml:notebook-guidance"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

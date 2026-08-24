@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "name": "organize-files",
+  "namespace": "fs",
+  "version": "1.0.0",
+  "description": "按扩展名把目录里的文件整理进子目录（演示写权限隔离：mutating 操作默认须授权）。",
+  "category": "fs",
+  "tags": [
+    "files",
+    "organize"
+  ],
+  "triggers": [
+    "整理文件",
+    "文件整理",
+    "organize files",
+    "按扩展名"
+  ],
+  "keywords": [
+    "整理",
+    "文件"
+  ],
+  "whenToUse": "需要把散乱文件按类型归档时使用（真实执行须授权）。",
+  "whenNotToUse": "有副作用的操作；默认策略 ask，未授权时只返回整理计划（dry run）。",
+  "useCases": [
+    {
+      "task": "把下载目录按扩展名归档"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "path.list",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string"
+          },
+          "pattern": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "output": {
+      "semanticType": "json",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "plan": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "plan",
+          "dryRun"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "fs:organize"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [
+      "workspace"
+    ],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": true
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var dir = String(input.directory || \".\");\nvar pattern = String(input.pattern || \"*\");\nreturn { plan: \"would organize files in \" + dir + \" matching \" + pattern + \" into subfolders by extension\", dryRun: true };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

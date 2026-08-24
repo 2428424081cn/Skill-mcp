@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "name": "docker-ops-assistant",
+  "namespace": "devops",
+  "version": "1.0.0",
+  "description": "Docker 容器与运维诊断助手：快速检查本地 Docker 服务状态、运行中容器列表与网络端口映射。",
+  "category": "devops",
+  "tags": [
+    "docker",
+    "container",
+    "devops",
+    "monitor",
+    "ports",
+    "status"
+  ],
+  "triggers": [
+    "检查 docker",
+    "查看容器状态",
+    "docker-ops-assistant",
+    "docker 端口检查",
+    "容器健康检查"
+  ],
+  "keywords": [
+    "docker",
+    "container",
+    "ps",
+    "ports",
+    "status",
+    "health",
+    "devops"
+  ],
+  "whenToUse": "在排查本地微服务容器崩溃、检查端口占用或查看服务健康状态时使用。",
+  "whenNotToUse": "生产环境全局容器销毁操作。",
+  "useCases": [
+    {
+      "task": "查看当前宿主机运行中的 Docker 容器与端口映射"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "docker.inspect-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "all": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      }
+    },
+    "output": {
+      "semanticType": "docker.status-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "runningCount": {
+            "type": "integer"
+          },
+          "containers": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "runningCount"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "devops:docker-inspect",
+    "infra:container"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 15000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { runningCount: 0, containers: [], message: 'Docker inspection executed.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

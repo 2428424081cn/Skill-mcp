@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "name": "sequential-thinking",
+  "namespace": "reasoning",
+  "version": "1.0.0",
+  "description": "动态思维链与假设回溯：通过分步推导、假设检验、分支探索与状态自省，解决复杂多步骤难题与算法推导。",
+  "category": "reasoning",
+  "tags": [
+    "reasoning",
+    "sequential-thinking",
+    "chain-of-thought",
+    "metacognition",
+    "branching",
+    "problem-solving"
+  ],
+  "triggers": [
+    "分步推导",
+    "sequential-thinking",
+    "思维链",
+    "多步推演",
+    "假设检验",
+    "动态推理",
+    "深度推导",
+    "逐步分析",
+    "回溯推理"
+  ],
+  "keywords": [
+    "reasoning",
+    "thought",
+    "hypothesis",
+    "branch",
+    "revision",
+    "sequential",
+    "step",
+    "deduction"
+  ],
+  "whenToUse": "在面对高度复杂、多变量影响、需要假设检验或需要多轮自省推演的难题时（如复杂算法设计、并发竞态排查、数学推导）使用。",
+  "whenNotToUse": "简单的常识性问答或单步骤格式化任务。",
+  "useCases": [
+    {
+      "task": "对复杂的并发死锁问题进行多分支假设推演与回溯验证"
+    },
+    {
+      "task": "分步骤推导并设计高可用状态机的转移逻辑"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "thought.step-input",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "thought": {
+            "type": "string",
+            "description": "当前思考步骤的具体论述"
+          },
+          "thoughtNumber": {
+            "type": "integer",
+            "description": "当前是第几步思考（从 1 开始）"
+          },
+          "totalThoughts": {
+            "type": "integer",
+            "description": "预估总思考步数"
+          },
+          "isRevision": {
+            "type": "boolean",
+            "description": "是否推翻或修正了前序假设"
+          },
+          "revisesThought": {
+            "type": "integer",
+            "description": "修正了第几步的思考"
+          },
+          "branchFromThought": {
+            "type": "integer",
+            "description": "从哪一步分叉出的新思维分支"
+          },
+          "branchId": {
+            "type": "string",
+            "description": "思维分支标识符"
+          },
+          "needsMoreThoughts": {
+            "type": "boolean",
+            "description": "是否还需要继续下一步思考"
+          }
+        },
+        "required": [
+          "thought",
+          "thoughtNumber",
+          "totalThoughts",
+          "needsMoreThoughts"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "thought.step-status",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "boolean"
+          },
+          "currentStep": {
+            "type": "integer"
+          },
+          "activeBranch": {
+            "type": "string"
+          },
+          "nextRecommendedAction": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accepted",
+          "currentStep"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "reasoning:sequential",
+    "cognition:thought-chain"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var tNum = input.thoughtNumber || 1;\n      var total = input.totalThoughts || 3;\n      var more = input.needsMoreThoughts !== false;\n      var branch = input.branchId || 'main';\n      var action = more ? ('Proceed to step ' + (tNum + 1) + ' of ' + total) : 'Thinking sequence completed. Synthesize final conclusion.';\n      return {\n        accepted: true,\n        currentStep: tNum,\n        activeBranch: branch,\n        isRevision: Boolean(input.isRevision),\n        nextRecommendedAction: action\n      };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Reasoning-Engine / Cognitive-Pack",
+  "license": "MIT",
+  "skillType": "rule"
+}

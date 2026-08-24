@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "name": "gcp-pipeline-resource-provisioning",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "Automates declarative resource creation and provisioning for data pipelines, supporting BigQuery, Dataform, Dataproc, BigQuery Data Transfer Service (DTS), and other resources. It manages environment-specific configurations (dev, staging, prod) through a deployment.yaml file.,Use",
+  "category": "gcp",
+  "tags": [
+    "gcp",
+    "pipeline",
+    "resource",
+    "provisioning"
+  ],
+  "triggers": [
+    "gcp-pipeline-resource-provisioning",
+    "gcp",
+    "pipeline"
+  ],
+  "keywords": [
+    "gcp",
+    "pipeline",
+    "resource",
+    "provisioning"
+  ],
+  "whenToUse": "Automates declarative resource creation and provisioning for data pipelines, supporting BigQuery, Dataform, Dataproc, BigQuery Data Transfer Service (DTS), and other resources. It manages environment-specific configurations (dev, staging, prod) through a deployment.yaml file.,Use",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:gcp-pipeline-resource-provisioning"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

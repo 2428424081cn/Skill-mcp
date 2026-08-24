@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "name": "e2e-playwright-tester",
+  "namespace": "test",
+  "version": "1.0.0",
+  "description": "Playwright 端到端 Web E2E 自动化测试生成：页面操作录制、视觉回归截图比对、网络断言与 Page Object 架构。",
+  "category": "test",
+  "tags": [
+    "playwright",
+    "e2e",
+    "testing",
+    "browser",
+    "automation",
+    "page-object"
+  ],
+  "triggers": [
+    "playwright 测试",
+    "生成 e2e 测试",
+    "自动化测试",
+    "e2e-playwright-tester",
+    "网页自动化测试"
+  ],
+  "keywords": [
+    "playwright",
+    "e2e",
+    "test",
+    "browser",
+    "assert",
+    "page-object",
+    "spec"
+  ],
+  "whenToUse": "为 Web 应用编写端到端自动化测试用例、验证关键业务流程（如登录、下单、表单提交）时使用。",
+  "whenNotToUse": "纯底层数学算法的简单单元测试。",
+  "useCases": [
+    {
+      "task": "根据业务流程生成标准 Playwright Page Object 测试用例"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "e2e.test-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "testName": {
+            "type": "string"
+          },
+          "targetUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "testName"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "e2e.spec-code",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "specCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "specCode"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "test:playwright-e2e",
+    "test:web-automation"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { specCode: 'import { test, expect } from \"@playwright/test\";\\ntest(\"sample\", async ({ page }) => { await page.goto(\"https://example.com\"); });' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

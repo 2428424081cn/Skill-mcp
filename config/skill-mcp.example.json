@@ -1,0 +1,21 @@
+{
+  "policy": {
+    "defaultMutating": "ask",
+    "defaultNetwork": "ask",
+    "rules": []
+  },
+  "embedder": {
+    "provider": "hash",
+    "dim": 2048
+  },
+  "reranker": "heuristic",
+  "llm": null,
+  "trust": {
+    "mode": "off",
+    "keys": []
+  },
+  "gate": {
+    "testsRequired": false
+  },
+  "remotes": []
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "name": "react-nextjs-architect",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "React 19 / Next.js App Router 现代前端架构规范：Server/Client Components 分离、流式 SSR 与状态管理最佳实践。",
+  "category": "dev",
+  "tags": [
+    "react",
+    "nextjs",
+    "frontend",
+    "architecture",
+    "rsc",
+    "server-components"
+  ],
+  "triggers": [
+    "nextjs 架构",
+    "react 规范",
+    "app router",
+    "server components",
+    "react 性能优化"
+  ],
+  "keywords": [
+    "react",
+    "nextjs",
+    "rsc",
+    "client",
+    "server",
+    "hook",
+    "component"
+  ],
+  "whenToUse": "在设计或重构 Next.js App Router 项目、划分 Server/Client 边界或排查 SSR 水合（Hydration）错误时使用。",
+  "whenNotToUse": "老旧的 React 15/16 Class Components 项目。",
+  "useCases": [
+    {
+      "task": "审查 Next.js 组件树中的 Server Components 与 Client 边界划分"
+    },
+    {
+      "task": "诊断客户端过量 bundle 打包与不必要的 'use client' 指令"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "code.react-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "targetDir": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "targetDir"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "code.react-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "clientCount": {
+            "type": "integer"
+          },
+          "serverCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "clientCount"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "dev:react-architect",
+    "code:frontend"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 10000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { clientCount: 4, serverCount: 12, advice: 'Keep leaf nodes as Client Components for minimal bundle size.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

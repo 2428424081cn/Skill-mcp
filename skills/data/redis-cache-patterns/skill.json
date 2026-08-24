@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "redis-cache-patterns",
+  "namespace": "data",
+  "version": "1.0.0",
+  "description": "Redis 缓存架构设计模式：缓存穿透（BloomFilter）、缓存雪崩（随机TTL）、分布式锁（Redlock）与速率限制器实现。",
+  "category": "data",
+  "tags": [
+    "redis",
+    "cache-pattern",
+    "distributed-lock",
+    "rate-limiter",
+    "backend",
+    "cache"
+  ],
+  "triggers": [
+    "redis 架构",
+    "缓存穿透",
+    "分布式锁",
+    "redis 限流",
+    "redis-cache-patterns"
+  ],
+  "keywords": [
+    "redis",
+    "cache",
+    "lock",
+    "ttl",
+    "rate-limit",
+    "bloom",
+    "pattern"
+  ],
+  "whenToUse": "在设计高并发系统缓存层、防止数据库击穿或实现跨微服务分布式锁与滑动窗口限流时使用。",
+  "whenNotToUse": "简单单机内存变量存储。",
+  "useCases": [
+    {
+      "task": "生成防击穿的随机过期时间与带有租期续约的 Redis 分布式锁逻辑"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "redis.pattern-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "patternName": {
+            "type": "string",
+            "enum": [
+              "dist_lock",
+              "rate_limit",
+              "jitter_ttl"
+            ]
+          }
+        },
+        "required": [
+          "patternName"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "redis.pattern-code",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "codeSnippet": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "codeSnippet"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "data:redis-pattern",
+    "cache:architecture"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { codeSnippet: 'SET resource_lock my_random_token NX PX 30000' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

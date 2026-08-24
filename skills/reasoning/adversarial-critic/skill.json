@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "name": "adversarial-critic",
+  "namespace": "reasoning",
+  "version": "1.0.0",
+  "description": "红蓝对抗与魔鬼代言人（Devil's Advocate）：对当前方案进行极限挑刺，挖掘边界漏洞、竞态死锁与崩溃反例。",
+  "category": "reasoning",
+  "tags": [
+    "red-team",
+    "adversarial",
+    "critic",
+    "devil-advocate",
+    "stress-test",
+    "edge-case"
+  ],
+  "triggers": [
+    "红蓝对抗",
+    "魔鬼代言人",
+    "挑刺",
+    "adversarial-critic",
+    "自我质疑",
+    "寻找反例",
+    "攻击假设",
+    "方案压力测试",
+    "极限反思"
+  ],
+  "keywords": [
+    "critic",
+    "adversarial",
+    "red-team",
+    "attack",
+    "vulnerability",
+    "flaw",
+    "counterexample"
+  ],
+  "whenToUse": "在确定任何技术方案、代码架构或核心算法之前，必须启动魔鬼代言人角色对其进行无情攻击和漏洞审查。",
+  "whenNotToUse": "编写简单的文本问候语。",
+  "useCases": [
+    {
+      "task": "扮演黑客和故障工程师，对新设计的支付幂等逻辑进行致命攻击"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "proposal.text",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "proposal": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "proposal"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "critic.attack-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "criticalFlaws": {
+            "type": "array"
+          },
+          "edgeCaseAttacks": {
+            "type": "array"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "PASSED",
+              "NEEDS_HARDENING",
+              "REJECTED"
+            ]
+          }
+        },
+        "required": [
+          "criticalFlaws",
+          "verdict"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "reasoning:adversarial",
+    "sec:red-team"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return {\n        criticalFlaws: [\"Network partition during 2-phase commit leaves lock orphaned.\"],\n        edgeCaseAttacks: [\"Clock skew causes TTL to expire prematurely on node B.\"],\n        verdict: \"NEEDS_HARDENING\"\n      };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Reasoning-Engine / Cognitive-Pack",
+  "license": "MIT",
+  "skillType": "rule"
+}

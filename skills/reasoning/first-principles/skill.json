@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "name": "first-principles",
+  "namespace": "reasoning",
+  "version": "1.0.0",
+  "description": "第一性原理思考与底层推导：剥离行业惯例与表象经验，拆解最底层的公理与硬约束，从零重新推导最优解法。",
+  "category": "reasoning",
+  "tags": [
+    "first-principles",
+    "reasoning",
+    "problem-solving",
+    "architecture",
+    "innovation",
+    "axiomatic"
+  ],
+  "triggers": [
+    "第一性原理",
+    "first-principles",
+    "底层推导",
+    "本质分析",
+    "从公理推导",
+    "剥离经验主义",
+    "本质思考",
+    "根本逻辑"
+  ],
+  "keywords": [
+    "axiom",
+    "first-principles",
+    "fundamental",
+    "truth",
+    "physics",
+    "constraint",
+    "bottom-up"
+  ],
+  "whenToUse": "在设计全新架构、打破传统死板解法、突破性能极限或审视“为什么大家一直这么做”时使用。",
+  "whenNotToUse": "遵循既定固定格式的标准语法配置（如 package.json 字段）。",
+  "useCases": [
+    {
+      "task": "从存储 I/O、内存带宽与网络 RTT 底层约束重新设计高吞吐缓存架构"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "first-principles.spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "problem": {
+            "type": "string"
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "现有方案中被大家视为理所当然的假设"
+          }
+        },
+        "required": [
+          "problem"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "first-principles.breakdown",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "axioms": {
+            "type": "array"
+          },
+          "deconstructedAssumptions": {
+            "type": "array"
+          },
+          "reconstructedSolution": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "axioms",
+          "reconstructedSolution"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "reasoning:first-principles",
+    "cognition:axiomatic"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var prob = input.problem || \"Default Problem\";\n      return {\n        axioms: [\"Hard physical limits (network RTT, CPU cycles)\", \"Mathematical invariance\"],\n        deconstructedAssumptions: input.assumptions || [\"We must use an existing framework\"],\n        reconstructedSolution: \"Constructed minimal architecture based strictly on invariants.\"\n      };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Reasoning-Engine / Cognitive-Pack",
+  "license": "MIT",
+  "skillType": "rule"
+}

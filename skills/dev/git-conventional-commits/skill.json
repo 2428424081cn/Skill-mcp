@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "name": "git-conventional-commits",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "Conventional Commits 提交规范守门人：强制统一 Git Commit Message 格式与语义化版本触发规范",
+  "category": "dev",
+  "tags": [
+    "git",
+    "commit",
+    "conventional-commits",
+    "rules",
+    "standards"
+  ],
+  "triggers": [
+    "commit",
+    "git commit",
+    "pr",
+    "pull request",
+    "changelog",
+    "release"
+  ],
+  "keywords": [
+    "git",
+    "commit",
+    "conventional-commits",
+    "rules",
+    "standards"
+  ],
+  "whenToUse": "在生成 Git 提交说明、合并请求（PR/MR）描述或版本变更日志时必须遵守",
+  "whenNotToUse": "编写临时无版控脚本或单行命令调试时无需强制",
+  "skillType": "rule",
+  "useCases": [
+    {
+      "task": "Conventional Commits 提交规范守门人：强制统一 Git Commit Message 格式与语义化版本触发规范"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "dev:git-conventional-commits"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "*"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { applied: true, rule: 'dev:git-conventional-commits' };"
+  },
+  "status": "active"
+}

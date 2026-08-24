@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "name": "bigquery-graph",
+  "namespace": "gcp",
+  "version": "1.0.0",
+  "description": "Provides guidelines and best practices for querying and defining property graphs and semantic graphs in BigQuery using GQL (Graph Query Language). Use when creating property graphs or querying graph topologies in BigQuery.",
+  "category": "gcp",
+  "tags": [
+    "bigquery",
+    "graph"
+  ],
+  "triggers": [
+    "bigquery-graph",
+    "bigquery",
+    "graph"
+  ],
+  "keywords": [
+    "bigquery",
+    "graph"
+  ],
+  "whenToUse": "Provides guidelines and best practices for querying and defining property graphs and semantic graphs in BigQuery using GQL (Graph Query Language). Use when creating property graphs or querying graph topologies in BigQuery.",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "gcp:bigquery-graph"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "data-agent-kit",
+  "license": "Apache-2.0"
+}

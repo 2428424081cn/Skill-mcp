@@ -1,0 +1,19 @@
+{
+  "name": "skill-mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "把技能当作数据的 MCP 服务器：智能检索、任务适配、workflow 组合、评价排序、版本/依赖、权限隔离",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "node --test --test-isolation=none \"test/**/*.test.ts\"",
+    "demo": "node scripts/demo.ts",
+    "start:http": "node src/main.ts --http",
+    "probe": "node scripts/probe.ts",
+    "smoke": "node scripts/smoke.ts"
+  },
+  "license": "MIT"
+}

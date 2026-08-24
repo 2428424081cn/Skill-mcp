@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "semver-bump",
+  "namespace": "util",
+  "version": "1.0.0",
+  "description": "语义化版本号升级：major / minor / patch。",
+  "category": "util",
+  "tags": [
+    "semver",
+    "version"
+  ],
+  "triggers": [
+    "版本",
+    "bump",
+    "semver",
+    "升级版本",
+    "版本号"
+  ],
+  "keywords": [
+    "版本",
+    "semver",
+    "bump"
+  ],
+  "whenToUse": "需要按 semver 规则计算下一个版本号。",
+  "whenNotToUse": "不做版本发布、不写 changelog。",
+  "useCases": [
+    {
+      "task": "把 1.2.3 patch 升级到 1.2.4"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "version",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "bump": {
+            "type": "string",
+            "enum": [
+              "major",
+              "minor",
+              "patch"
+            ]
+          }
+        },
+        "required": [
+          "version"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "version",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "previous": {
+            "type": "string"
+          },
+          "bump": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "util:semver-bump"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var v = String(input.version || \"\");\nvar m = /^(\\d+)\\.(\\d+)\\.(\\d+)(?:-(.+))?$/.exec(v);\nif (!m) throw new Error(\"invalid semver: \" + v);\nvar bump = input.bump || \"patch\";\nvar major = Number(m[1]), minor = Number(m[2]), patch = Number(m[3]);\nif (bump === \"major\") { major += 1; minor = 0; patch = 0; }\nelse if (bump === \"minor\") { minor += 1; patch = 0; }\nelse { patch += 1; }\nreturn { version: major + \".\" + minor + \".\" + patch, previous: v, bump: bump };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "skill-mcp-demo",
+  "license": "MIT"
+}

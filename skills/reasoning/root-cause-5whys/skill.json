@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "name": "root-cause-5whys",
+  "namespace": "reasoning",
+  "version": "1.0.0",
+  "description": "丰田 5-Whys 根本原因穿透分析：连续五层追问为什么，从表象报错穿透至系统机制、流程与架构级根本原因。",
+  "category": "reasoning",
+  "tags": [
+    "5-whys",
+    "root-cause",
+    "troubleshooting",
+    "postmortem",
+    "analysis",
+    "systemic"
+  ],
+  "triggers": [
+    "5whys",
+    "5个为什么",
+    "根因分析",
+    "root-cause-5whys",
+    "穿透本质",
+    "故障溯源",
+    "为什么报错",
+    "根本原因"
+  ],
+  "keywords": [
+    "why",
+    "root-cause",
+    "5whys",
+    "postmortem",
+    "failure",
+    "cause",
+    "depth"
+  ],
+  "whenToUse": "在生产故障复盘（Postmortem）、排查复发性 Bug 或分析系统性缺陷时使用，坚决杜绝“头痛医头脚痛医脚”。",
+  "whenNotToUse": "只查询当前系统的时间戳或静态配置。",
+  "useCases": [
+    {
+      "task": "对一次线上数据库 CPU 100% 报警进行 5 层深度因果链追溯"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "incident.symptom",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "symptom": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symptom"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "5whys.chain-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "chain": {
+            "type": "array"
+          },
+          "rootCause": {
+            "type": "string"
+          },
+          "systemicFix": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chain",
+          "rootCause",
+          "systemicFix"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "reasoning:5whys",
+    "devops:postmortem"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var s = input.symptom || \"Database Timeout\";\n      return {\n        chain: [\n          \"Why 1: DB connection pool exhausted\",\n          \"Why 2: Slow query blocked connections for >10s\",\n          \"Why 3: Missing composite index on (user_id, created_at)\",\n          \"Why 4: Feature PR lacked DB migration review\",\n          \"Why 5: CI pipeline lacks automated EXPLAIN query plan checks\"\n        ],\n        rootCause: \"CI pipeline missing automated query performance gating.\",\n        systemicFix: \"Add CI automated EXPLAIN check for all new raw SQL queries.\"\n      };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Reasoning-Engine / Cognitive-Pack",
+  "license": "MIT",
+  "skillType": "rule"
+}

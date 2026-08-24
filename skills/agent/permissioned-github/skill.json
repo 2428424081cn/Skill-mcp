@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "name": "permissioned-github",
+  "namespace": "agent",
+  "version": "1.0.0",
+  "description": "Guidelines for interacting with GitHub and request permissions from the user when commands fail due to restrictions in the agent environment.",
+  "category": "agent",
+  "tags": [
+    "permissioned",
+    "github"
+  ],
+  "triggers": [
+    "permissioned-github",
+    "permissioned",
+    "github",
+    "GitHub 权限",
+    "github 操作",
+    "仓库操作"
+  ],
+  "keywords": [
+    "permissioned",
+    "github",
+    "GitHub 权限",
+    "github 操作",
+    "仓库操作"
+  ],
+  "whenToUse": "Guidelines for interacting with GitHub and request permissions from the user when commands fail due to restrictions in the agent environment.",
+  "whenNotToUse": "",
+  "useCases": [],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "text"
+    },
+    "output": {
+      "semanticType": "text"
+    }
+  },
+  "capabilities": [
+    "agent:permissioned-github"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 30000,
+    "maxCostCents": 50,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { note: \"Follow SKILL.md instructions.\" };"
+  },
+  "status": "active",
+  "author": "user",
+  "license": "Apache-2.0"
+}

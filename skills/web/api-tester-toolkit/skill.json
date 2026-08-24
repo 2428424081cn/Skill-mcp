@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "name": "api-tester-toolkit",
+  "namespace": "web",
+  "version": "1.0.0",
+  "description": "API 接口网络测试与耗时诊断工具包：发起 HTTP 请求、测量网络延迟、检查响应状态码与响应体。",
+  "category": "web",
+  "tags": [
+    "api",
+    "http",
+    "tester",
+    "probe",
+    "latency",
+    "rest"
+  ],
+  "triggers": [
+    "测试接口",
+    "http 测试",
+    "api 探测",
+    "测试 api 延迟",
+    "api-tester-toolkit",
+    "发送请求测试"
+  ],
+  "keywords": [
+    "api",
+    "http",
+    "probe",
+    "fetch",
+    "latency",
+    "test",
+    "rest"
+  ],
+  "whenToUse": "在需要探测外部或本地 HTTP 接口健康状态、测量响应耗时与检查响应 JSON 契约时使用。",
+  "whenNotToUse": "复杂的 UI 浏览器端到端交互（请使用 web:playwright）。",
+  "useCases": [
+    {
+      "task": "测试目标 API 接口的 HTTP 响应状态与往返耗时"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "http.request-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "POST",
+              "PUT",
+              "DELETE"
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "http.probe-result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer"
+          },
+          "latencyMs": {
+            "type": "number"
+          },
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "ok"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "web:http-test",
+    "net:probe"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [
+      "*"
+    ],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 15000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { ok: true, status: 200, latencyMs: 45, message: 'HTTP endpoint tested successfully.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

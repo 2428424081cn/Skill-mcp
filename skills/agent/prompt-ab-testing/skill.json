@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "name": "prompt-ab-testing",
+  "namespace": "agent",
+  "version": "1.0.0",
+  "description": "大模型 Prompt 提示词 A/B 测试与版本迭代：对比不同 Prompt 版本的输出质量、长度、遵循度与稳定性。",
+  "category": "agent",
+  "tags": [
+    "prompt-engineering",
+    "ab-testing",
+    "evaluation",
+    "llm",
+    "prompt-tuning"
+  ],
+  "triggers": [
+    "prompt 测试",
+    "提示词优化",
+    "对比 prompt",
+    "prompt ab 测试",
+    "prompt-ab-testing"
+  ],
+  "keywords": [
+    "prompt",
+    "llm",
+    "ab-test",
+    "evaluate",
+    "optimize",
+    "compare"
+  ],
+  "whenToUse": "在调优系统提示词（System Prompt）、优化 Few-Shot 样本或比较两个 Prompt 版本的表现时使用。",
+  "whenNotToUse": "简单的纯文本字符串拼接。",
+  "useCases": [
+    {
+      "task": "量化对比 Prompt A 与 Prompt B 在相同测试集下的表现差异"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "prompt.ab-input",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "promptA": {
+            "type": "string"
+          },
+          "promptB": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "promptA",
+          "promptB"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "prompt.ab-result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "winner": {
+            "type": "string"
+          },
+          "analysis": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "winner"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "agent:prompt-test",
+    "eval:prompt"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { winner: 'promptB', analysis: 'Prompt B provided clearer constraints and fewer negative tokens.' };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Community / Awesome-Agent-Skills",
+  "license": "MIT"
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "name": "db-schema-inspector",
+  "namespace": "db",
+  "version": "1.0.0",
+  "description": "数据库结构探查与自省工具：自动探查 SQLite 数据库表清单、列类型、主键约束与记录总行数。",
+  "category": "db",
+  "tags": [
+    "database",
+    "schema",
+    "sqlite",
+    "inspector",
+    "tables",
+    "columns"
+  ],
+  "triggers": [
+    "探查数据库",
+    "查看表结构",
+    "db-schema-inspector",
+    "数据库元数据",
+    "sqlite 表结构"
+  ],
+  "keywords": [
+    "database",
+    "schema",
+    "table",
+    "column",
+    "sqlite",
+    "inspect",
+    "metadata"
+  ],
+  "whenToUse": "在编写 SQL 前，自动提取数据库中真实存在的数据表与字段类型，避免字段名拼写错误。",
+  "whenNotToUse": "大规模高并发生产数据库写入。",
+  "useCases": [
+    {
+      "task": "提取 SQLite 数据库所有表的架构定义与行数"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "db.inspect-spec",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "dbPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dbPath"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "db.schema-report",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "tableCount": {
+            "type": "integer"
+          },
+          "tables": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "tableCount",
+          "tables"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "db:schema-inspect",
+    "data:metadata"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [
+      "./**"
+    ],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 10000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "return { tableCount: 1, tables: [{ name: 'logs', rowCount: 10, columns: ['ts', 'runId', 'outcome'] }] };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}

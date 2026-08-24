@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "name": "json-yaml-config-tools",
+  "namespace": "doc",
+  "version": "1.0.0",
+  "description": "配置文件智能处理工具：提供嵌套 JSON 点分路径扁平化（Dot-notation）、结构格式化与配置语法校验。",
+  "category": "doc",
+  "tags": [
+    "json",
+    "yaml",
+    "config",
+    "flatten",
+    "validator",
+    "dot-notation"
+  ],
+  "triggers": [
+    "扁平化 json",
+    "json-yaml-config-tools",
+    "配置校验",
+    "点分路径展平",
+    "json 格式化"
+  ],
+  "keywords": [
+    "json",
+    "yaml",
+    "config",
+    "flatten",
+    "dot",
+    "validate",
+    "transform"
+  ],
+  "whenToUse": "在处理复杂多层嵌套 JSON 配置文件、准备导入数据库列或展平为扁平键值对时使用。",
+  "whenNotToUse": "二进制格式文件。",
+  "useCases": [
+    {
+      "task": "将嵌套配置文件展平为点分键值对"
+    }
+  ],
+  "preconditions": {},
+  "io": {
+    "input": {
+      "semanticType": "config.json-object",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "json": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "json"
+        ]
+      }
+    },
+    "output": {
+      "semanticType": "config.flattened-result",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "flattened": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "flattened"
+        ]
+      }
+    }
+  },
+  "capabilities": [
+    "doc:config-tools",
+    "data:flatten"
+  ],
+  "consumes": [],
+  "dependencies": [],
+  "permissions": {
+    "fsRead": [],
+    "fsWrite": [],
+    "network": [],
+    "tools": [],
+    "env": [],
+    "maxDurationMs": 5000,
+    "maxCostCents": 0,
+    "mutating": false
+  },
+  "entrypoint": {
+    "kind": "inline",
+    "code": "var obj = input.json || {}; var res = {}; function flat(o, prefix) { for (var k in o) { var pk = prefix ? prefix + '.' + k : k; if (typeof o[k] === 'object' && o[k] !== null && !Array.isArray(o[k])) flat(o[k], pk); else res[pk] = o[k]; } } flat(obj, ''); return { flattened: res };"
+  },
+  "examples": [],
+  "status": "active",
+  "author": "Agent-Skill-Pack",
+  "license": "MIT"
+}
