@@ -265,7 +265,50 @@ async function handleMcp(msg) {
       };
     }
 
-    if (name === "skill_get" || name === "skill_inspect") {
+    // 4.1 skill_inspect: 纯元数据、依赖项与文件清单（轻量结构化，不塞入完整长篇 Markdown）
+    if (name === "skill_inspect") {
+      const key = String(args.key || "");
+      const found = SKILLS.find((s) =>
+        s.key === key ||
+        s.manifest.name === key ||
+        s.key.startsWith(key + "@") ||
+        (s.manifest.namespace && (s.manifest.namespace + ":" + s.manifest.name) === key)
+      );
+      if (!found) {
+        return { jsonrpc: "2.0", id, result: { isError: true, content: [{ type: "text", text: "Skill not found: " + key }] } };
+      }
+
+      const inspectData = {
+        key: found.key,
+        name: found.manifest.name,
+        namespace: found.manifest.namespace,
+        version: found.manifest.version,
+        description: found.manifest.description,
+        category: found.manifest.category,
+        tags: found.manifest.tags || [],
+        capabilities: found.manifest.capabilities || [],
+        consumes: found.manifest.consumes || [],
+        dependencies: found.manifest.dependencies || [],
+        permissions: found.manifest.permissions || {},
+        entrypoint: found.manifest.entrypoint,
+        contentHash: found.contentHash,
+        files: Object.keys(found.files),
+        skillType: found.manifest.skillType || "tool",
+        status: found.manifest.status || "active"
+      };
+
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          content: [{ type: "text", text: JSON.stringify(inspectData, null, 2) }],
+          structuredContent: inspectData
+        }
+      };
+    }
+
+    // 4.2 skill_get: 获取完整的 SKILL.md 规范与操作指南（SOP 正文）
+    if (name === "skill_get") {
       const key = String(args.key || "");
       const found = SKILLS.find((s) =>
         s.key === key ||
@@ -285,7 +328,8 @@ async function handleMcp(msg) {
             key: found.key,
             manifest: found.manifest,
             skillMd: found.files["SKILL.md"],
-            files: Object.keys(found.files)
+            files: Object.keys(found.files),
+            note: "follow SKILL.md instructions; use skill_run to execute"
           }
         }
       };
