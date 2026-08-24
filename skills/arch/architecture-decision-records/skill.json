@@ -1,0 +1,35 @@
+{
+  "name": "architecture-decision-records",
+  "namespace": "arch",
+  "version": "1.0.0",
+  "description": "架构决策记录 (ADR) 标准规范：技术选型、架构权衡论证与变更生命周期管理。",
+  "category": "arch",
+  "tags": [
+    "adr",
+    "architecture-decision-records",
+    "architecture",
+    "rfc",
+    "documentation"
+  ],
+  "triggers": [
+    "adr",
+    "架构决策",
+    "技术选型",
+    "架构评审",
+    "rfc 文档",
+    "decision log"
+  ],
+  "keywords": [
+    "adr",
+    "architecture-decision-record",
+    "context",
+    "decision-drivers",
+    "options",
+    "consequences"
+  ],
+  "whenToUse": "在进行重大技术选型、数据库/框架重构或制定核心架构规约时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "arch:architecture-decision-records"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "shadcn-ui-radix-architect",
+  "namespace": "frontend",
+  "version": "1.0.0",
+  "description": "Shadcn UI 与 Radix UI 现代前端无障碍可复用组件架构规范与最佳实践指南。",
+  "category": "frontend",
+  "tags": [
+    "shadcn",
+    "radix-ui",
+    "react",
+    "tailwind",
+    "ui-components",
+    "accessibility"
+  ],
+  "triggers": [
+    "shadcn",
+    "radix",
+    "ui component",
+    "tailwind 组件",
+    "无障碍组件",
+    "dialog",
+    "dropdown"
+  ],
+  "keywords": [
+    "shadcn",
+    "radix",
+    "cva",
+    "clsx",
+    "tailwind-merge",
+    "asChild",
+    "accessibility",
+    "aria"
+  ],
+  "whenToUse": "在设计与构建 React / Next.js 可复用 UI 组件、对话框、下拉菜单、表单控件及设计系统时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "frontend:shadcn-ui-radix-architect"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "semantic-release-changelog",
+  "namespace": "dev",
+  "version": "1.0.0",
+  "description": "语义化版本号 (SemVer) 升级与基于 Conventional Commits 的自动化 CHANGELOG 生成规范。",
+  "category": "dev",
+  "tags": [
+    "semantic-release",
+    "semver",
+    "changelog",
+    "release",
+    "git",
+    "ci-cd"
+  ],
+  "triggers": [
+    "semantic release",
+    "changelog",
+    "版本号规范",
+    "semver",
+    "发布日志",
+    "release notes"
+  ],
+  "keywords": [
+    "semver",
+    "major",
+    "minor",
+    "patch",
+    "changelog",
+    "conventional-commits",
+    "release"
+  ],
+  "whenToUse": "在规划项目版本号发布、自动化生成 CHANGELOG.md 与管理 Git Release 标签时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "dev:semantic-release-changelog"
+  ]
+}

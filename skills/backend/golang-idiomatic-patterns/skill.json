@@ -1,0 +1,38 @@
+{
+  "name": "golang-idiomatic-patterns",
+  "namespace": "backend",
+  "version": "1.0.0",
+  "description": "Go (Golang) 原生工程惯用法：错误链包装、Context 生命周期、Goroutine 泄漏防御与表驱动测试。",
+  "category": "backend",
+  "tags": [
+    "golang",
+    "go",
+    "error-wrapping",
+    "goroutine",
+    "context",
+    "best-practices"
+  ],
+  "triggers": [
+    "golang",
+    "go 规范",
+    "go 错误处理",
+    "goroutine 泄露",
+    "context.Context",
+    "go 并发"
+  ],
+  "keywords": [
+    "golang",
+    "go",
+    "errors.Is",
+    "errors.As",
+    "fmt.Errorf",
+    "context",
+    "sync.WaitGroup",
+    "channel"
+  ],
+  "whenToUse": "在编写 Go 语言后端服务、处理并发协程与标准库工程化代码时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "backend:golang-idiomatic-patterns"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "vitest-pytest-unit-testing",
+  "namespace": "test",
+  "version": "1.0.0",
+  "description": "现代单元测试黄金法则：AAA 模式、表驱动参数化测试与精准 Mock 隔离规范。",
+  "category": "test",
+  "tags": [
+    "vitest",
+    "pytest",
+    "unit-test",
+    "testing",
+    "mocking",
+    "test-driven-development"
+  ],
+  "triggers": [
+    "unit test",
+    "单元测试",
+    "vitest",
+    "pytest",
+    "mock",
+    "测试用例",
+    "测试驱动"
+  ],
+  "keywords": [
+    "vitest",
+    "pytest",
+    "arrange-act-assert",
+    "table-driven",
+    "parametrize",
+    "mock",
+    "spyOn"
+  ],
+  "whenToUse": "在编写 TypeScript / Python 单元测试、设计边界测试用例与 Mock 外部依赖时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "test:vitest-pytest-unit-testing"
+  ]
+}

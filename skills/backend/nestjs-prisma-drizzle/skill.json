@@ -1,0 +1,39 @@
+{
+  "name": "nestjs-prisma-drizzle",
+  "namespace": "backend",
+  "version": "1.0.0",
+  "description": "NestJS 模块化依赖注入架构与 Prisma / Drizzle ORM 端到端类型安全后端规范。",
+  "category": "backend",
+  "tags": [
+    "nestjs",
+    "prisma",
+    "drizzle",
+    "typescript",
+    "orm",
+    "backend-architecture"
+  ],
+  "triggers": [
+    "nestjs",
+    "prisma",
+    "drizzle",
+    "class-validator",
+    "nestjs 模块",
+    "type-safe orm"
+  ],
+  "keywords": [
+    "nestjs",
+    "prisma",
+    "drizzle",
+    "controller",
+    "service",
+    "module",
+    "guard",
+    "interceptor",
+    "dto"
+  ],
+  "whenToUse": "在开发 Node.js / TypeScript 企业级后端微服务、设计数据表 Schema 与事务处理时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "backend:nestjs-prisma-drizzle"
+  ]
+}

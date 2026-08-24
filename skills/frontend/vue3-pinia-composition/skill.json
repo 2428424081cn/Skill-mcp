@@ -1,0 +1,37 @@
+{
+  "name": "vue3-pinia-composition",
+  "namespace": "frontend",
+  "version": "1.0.0",
+  "description": "Vue 3 组合式 API (<script setup>) 与 Pinia 状态管理架构规范与响应式丢失防御。",
+  "category": "frontend",
+  "tags": [
+    "vue3",
+    "pinia",
+    "typescript",
+    "composition-api",
+    "frontend-architecture"
+  ],
+  "triggers": [
+    "vue3",
+    "pinia",
+    "composition api",
+    "script setup",
+    "vue 响应式",
+    "vue store"
+  ],
+  "keywords": [
+    "vue3",
+    "pinia",
+    "script setup",
+    "ref",
+    "reactive",
+    "storeToRefs",
+    "computed",
+    "watchEffect"
+  ],
+  "whenToUse": "在开发 Vue 3 / Nuxt 3 前端项目、构建全局状态管理与组合式函数 (Composables) 时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "frontend:vue3-pinia-composition"
+  ]
+}

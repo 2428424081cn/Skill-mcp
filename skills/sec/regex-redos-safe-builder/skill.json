@@ -1,0 +1,36 @@
+{
+  "name": "regex-redos-safe-builder",
+  "namespace": "sec",
+  "version": "1.0.0",
+  "description": "安全正则表达式构建指南：识别并杜绝 ReDoS 灾难性回溯漏洞与高耗时匹配反模式。",
+  "category": "sec",
+  "tags": [
+    "regex",
+    "redos",
+    "security",
+    "vulnerability",
+    "performance",
+    "pattern-matching"
+  ],
+  "triggers": [
+    "redos",
+    "regex 性能",
+    "正则漏洞",
+    "回溯漏洞",
+    "正则表达式优化",
+    "safe regex"
+  ],
+  "keywords": [
+    "regex",
+    "redos",
+    "catastrophic-backtracking",
+    "atomic-group",
+    "linear-time",
+    "re2"
+  ],
+  "whenToUse": "在编写处理外部用户输入的正则表达式、解析日志或做文本校验时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "sec:regex-redos-safe-builder"
+  ]
+}

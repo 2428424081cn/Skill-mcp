@@ -1,0 +1,36 @@
+{
+  "name": "graphql-schema-design",
+  "namespace": "backend",
+  "version": "1.0.0",
+  "description": "GraphQL API 设计准则：Relay 游标分页、DataLoader 批量防 N+1 查询与 Schema 优雅演进。",
+  "category": "backend",
+  "tags": [
+    "graphql",
+    "schema-design",
+    "dataloader",
+    "relay-pagination",
+    "api-design"
+  ],
+  "triggers": [
+    "graphql",
+    "graphql schema",
+    "dataloader",
+    "n+1",
+    "graphql 分页",
+    "apollo"
+  ],
+  "keywords": [
+    "graphql",
+    "dataloader",
+    "schema",
+    "relay",
+    "cursor-pagination",
+    "mutation",
+    "federation"
+  ],
+  "whenToUse": "在设计 GraphQL 服务端 Schema、解决关联数据 N+1 查询与构建客户端按需拉取 API 时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "backend:graphql-schema-design"
+  ]
+}

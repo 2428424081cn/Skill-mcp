@@ -1,0 +1,37 @@
+{
+  "name": "tanstack-query-patterns",
+  "namespace": "frontend",
+  "version": "1.0.0",
+  "description": "TanStack Query v5 (React Query) 缓存架构、Query Key 工厂、乐观更新与 SSR 预取模式。",
+  "category": "frontend",
+  "tags": [
+    "tanstack-query",
+    "react-query",
+    "react",
+    "cache",
+    "data-fetching",
+    "optimistic-updates"
+  ],
+  "triggers": [
+    "react query",
+    "tanstack query",
+    "useQuery",
+    "useMutation",
+    "乐观更新",
+    "query key"
+  ],
+  "keywords": [
+    "tanstack-query",
+    "react-query",
+    "useQuery",
+    "useMutation",
+    "queryKey",
+    "invalidateQueries",
+    "setQueryData"
+  ],
+  "whenToUse": "在 React / Next.js 项目中处理异步服务端状态管理、数据缓存、自动轮询与变更后乐观更新时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "frontend:tanstack-query-patterns"
+  ]
+}

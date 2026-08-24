@@ -1,0 +1,35 @@
+{
+  "name": "llm-prompt-injection-defense",
+  "namespace": "ai",
+  "version": "1.0.0",
+  "description": "大模型 Prompt 注入防御与越狱防护准则：非可信数据定界隔离、系统提示词防嗅探与输入清洗。",
+  "category": "ai",
+  "tags": [
+    "prompt-injection",
+    "llm-security",
+    "security",
+    "guardrails",
+    "jailbreak-defense"
+  ],
+  "triggers": [
+    "prompt injection",
+    "提示词注入",
+    "越狱",
+    "越权指令",
+    "大模型安全",
+    "system prompt 保护"
+  ],
+  "keywords": [
+    "prompt-injection",
+    "jailbreak",
+    "guardrails",
+    "untrusted-input",
+    "xml-delimiters",
+    "canary"
+  ],
+  "whenToUse": "在构建任何接入 LLM 的业务应用、处理外部不可信用户输入与编写 Agent 控制流时必须遵守。",
+  "skillType": "rule",
+  "capabilities": [
+    "ai:llm-prompt-injection-defense"
+  ]
+}

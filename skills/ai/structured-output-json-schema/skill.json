@@ -1,0 +1,36 @@
+{
+  "name": "structured-output-json-schema",
+  "namespace": "ai",
+  "version": "1.0.0",
+  "description": "大模型严格结构化输出 JSON Schema 约束设计与 Function Calling 容错修复机制。",
+  "category": "ai",
+  "tags": [
+    "structured-output",
+    "json-schema",
+    "function-calling",
+    "pydantic",
+    "zod",
+    "llm"
+  ],
+  "triggers": [
+    "json schema",
+    "structured output",
+    "结构化输出",
+    "function calling",
+    "大模型 json",
+    "zod schema"
+  ],
+  "keywords": [
+    "json-schema",
+    "structured-output",
+    "zod",
+    "pydantic",
+    "function-calling",
+    "repair-json"
+  ],
+  "whenToUse": "在需要大模型严格返回合法 JSON 数据、对接外部 API 或做自动化决策流时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "ai:structured-output-json-schema"
+  ]
+}

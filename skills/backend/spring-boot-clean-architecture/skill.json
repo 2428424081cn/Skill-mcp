@@ -1,0 +1,38 @@
+{
+  "name": "spring-boot-clean-architecture",
+  "namespace": "backend",
+  "version": "1.0.0",
+  "description": "Spring Boot 3 / Java 企业级 DDD 领域驱动设计与六边形 (Hexagonal) 干净架构规范。",
+  "category": "backend",
+  "tags": [
+    "spring-boot",
+    "java",
+    "clean-architecture",
+    "ddd",
+    "hexagonal-architecture",
+    "enterprise"
+  ],
+  "triggers": [
+    "spring boot",
+    "spring 架构",
+    "java clean architecture",
+    "ddd",
+    "六边形架构",
+    "domain entity"
+  ],
+  "keywords": [
+    "spring-boot",
+    "java",
+    "domain",
+    "repository",
+    "use-case",
+    "controller",
+    "mapstruct",
+    "transactional"
+  ],
+  "whenToUse": "在开发 Spring Boot 3 / Java 21 企业级微服务、设计领域模型与规约分层架构时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "backend:spring-boot-clean-architecture"
+  ]
+}

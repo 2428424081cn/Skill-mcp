@@ -1,0 +1,35 @@
+{
+  "name": "tailwind-v4-design-system",
+  "namespace": "frontend",
+  "version": "1.0.0",
+  "description": "TailwindCSS v4 现代化 CSS 变量架构、@theme 指令与容器查询 (Container Queries) 设计准则。",
+  "category": "frontend",
+  "tags": [
+    "tailwind-v4",
+    "css",
+    "design-tokens",
+    "container-queries",
+    "web-design"
+  ],
+  "triggers": [
+    "tailwind v4",
+    "tailwind 4",
+    "tailwind css变量",
+    "@theme",
+    "tailwind tokens"
+  ],
+  "keywords": [
+    "tailwind",
+    "v4",
+    "@theme",
+    "@layer",
+    "container-queries",
+    "oklch",
+    "design-system"
+  ],
+  "whenToUse": "在基于 TailwindCSS v4 构建全新现代 Web 项目、配置主题颜色阶梯与自适应容器时使用。",
+  "skillType": "tool",
+  "capabilities": [
+    "frontend:tailwind-v4-design-system"
+  ]
+}
