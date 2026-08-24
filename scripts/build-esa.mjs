@@ -6,43 +6,12 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
+import { STOPWORDS, segment } from "./lib/segment.mjs";
 
 console.log("== [ESA Cloud Build] 开始构建 Skill-MCP 边缘分发包 (三层通用检索架构) ==");
 
 const skillsDir = join(process.cwd(), "skills");
 
-const CJK_RE = /[\u4e00-\u9fff]/;
-
-const STOPWORDS = new Set([
-  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做", "支持", "提供", "使用", "进行", "相关", "问题", "处理", "实现", "工具", "助手", "功能", "基于", "用于"
-]);
-
-function tokenize(text) {
-  const lower = String(text || "").toLowerCase();
-  const words = lower.split(/[^0-9a-z\u4e00-\u9fff]+/).filter((w) => w.length > 0);
-  const out = [];
-  for (const w of words) {
-    if (STOPWORDS.has(w)) continue;
-    if (CJK_RE.test(w)) {
-      if (w.length === 1) {
-        if (!STOPWORDS.has(w)) out.push(w);
-      } else {
-        for (let i = 0; i < w.length - 1; i++) {
-          const bigram = w.slice(i, i + 2);
-          if (!STOPWORDS.has(bigram)) out.push(bigram);
-        }
-      }
-    } else {
-      if (!STOPWORDS.has(w)) {
-        out.push(w);
-        if (w.length > 4) {
-          for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
-        }
-      }
-    }
-  }
-  return out;
-}
 
 function hashVector(tokens, dim = 2048) {
   const v = new Array(dim).fill(0);
@@ -125,7 +94,7 @@ const dfMap = new Map();
 for (const s of skills) {
   const m = s.manifest;
   const md = s.files["SKILL.md"] || "";
-  const docTokens = new Set(tokenize([m.name, m.description || "", m.whenToUse || "", md.slice(0, 1000)].join(" ")));
+  const docTokens = new Set(segment([m.name, m.description || "", m.whenToUse || "", md.slice(0, 1000)].join(" ")));
   for (const t of docTokens) {
     dfMap.set(t, (dfMap.get(t) || 0) + 1);
   }
@@ -139,7 +108,7 @@ for (const s of skills) {
   const m = s.manifest;
   const md = s.files["SKILL.md"] || "";
   const desc = (m.description || "") + " " + (m.whenToUse || "");
-  const descTokens = tokenize(desc);
+  const descTokens = segment(desc);
 
   const cand = new Map();
   for (const t of descTokens) {
@@ -172,17 +141,18 @@ for (const s of skills) {
     (m.tags || []).join(" "),
     md.slice(0, 1200)
   ];
-  s.vector = hashVector(tokenize(profileParts.join(" ")), 2048);
+  s.vector = hashVector(segment(profileParts.join(" ")), 2048);
 }
 
 // ─────────────────────────────────────────────────────────────
 // Part B & C: 生成 Worker 运行时脚本 (含全局同义词典与 3 闸拒识层)
 // ─────────────────────────────────────────────────────────────
 const workerSource = `// Skill-MCP 边缘分发网关 (Aliyun ESA / Cloudflare Workers)
-// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构 v4：
+// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构 v5：
 // 1. 索引时 IDF 自动合成 Triggers (合成词走 1.5 权重 BM25)
 // 2. 查询时全局同义词典扩展 (α=0.4 对称展开)
-// 3. 通用 3 闸拒识层 (Rule 回池但 ×0.75 惩罚 + trigger 高精度清洗 + 平坦度检查)
+// 3. 两阶段打分 v5：原始分管准入（FLOOR_RAW=0.35 + 平坦度闸），惩罚（rule -0.15 / cov 罚）只管排序
+//    分词器 segment 与构建侧 scripts/lib/segment.mjs 同源，索引/查询两侧对称
 
 const SKILLS = ${JSON.stringify(skills)};
 
@@ -219,7 +189,9 @@ const SYNONYMS = {
 
 const SYN_ALPHA = 0.4; // 同义词扩展权重
 
-function tokenize(text) {
+// 修 3 不变量：运行时分词器与构建时共用同一算法 —— 本函数是 scripts/lib/segment.mjs 的镜像副本，
+// 两侧行为必须逐字一致（改动任何一侧都要同步另一侧，test-tokenizer.mjs 负责从产物侧验证）。
+function segment(text) {
   const lower = String(text || "").toLowerCase();
   const words = lower.split(/[^0-9a-z\\u4e00-\\u9fff]+/).filter((w) => w.length > 0);
   const out = [];
@@ -255,7 +227,7 @@ function expandQueryTokens(tokens, rawQuery) {
   for (const t of tokens) {
     const syns = SYNONYMS[t] || [];
     for (const s of syns) {
-      for (const st of tokenize(s)) {
+      for (const st of segment(s)) {
         if (!tokenWeights.has(st)) tokenWeights.set(st, SYN_ALPHA);
       }
     }
@@ -266,7 +238,7 @@ function expandQueryTokens(tokens, rawQuery) {
   for (const [phrase, syns] of Object.entries(SYNONYMS)) {
     if (ql.includes(phrase)) {
       for (const s of syns) {
-        for (const st of tokenize(s)) {
+        for (const st of segment(s)) {
           if (!tokenWeights.has(st)) tokenWeights.set(st, SYN_ALPHA);
         }
       }
@@ -313,7 +285,9 @@ class InvertedIndex {
   add(key, fields) {
     let total = 0;
     for (const field of fields) {
-      const tokens = tokenize(field.text);
+      // 修 3：所有字段（name/triggers/keywords/tags/desc/SKILL.md）入倒排前统一走 segment()，
+      // 与查询侧同一分词器 —— triggers 里的「正则卡死」以 正则/则卡/卡死 入索引，查询侧 bigram 才撞得上。
+      const tokens = segment(field.text);
       total += tokens.length;
       const freq = new Map();
       for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1);
@@ -482,7 +456,7 @@ async function handleMcp(msg) {
       const verbose = Boolean(args.verbose);
       const includeRules = Boolean(args.includeRules);
 
-      const qTokens = tokenize(query);
+      const qTokens = segment(query);
       if (qTokens.length === 0) {
         return {
           jsonrpc: "2.0",
@@ -513,16 +487,18 @@ async function handleMcp(msg) {
       }
 
       // ─────────────────────────────────────────────────────────
-      // Part C: 闸 1 v4 — Rule 回池，但整体分数 ×0.75 惩罚
-      // 理由：initialize 已常驻摘要，检索时 rule 不应与 tool 平权；
-      // 同时保留检索路径，用户可通过 skill_get 拿到完整 SOP。
+      // Part C v5: 两阶段打分 —— 拒识与降权解耦（核心手术）
+      // 原则：原始分管「是不是域内」，惩罚只管「排第几」，不许共用一个数字。
+      // v4 病灶：cov/rule 惩罚掺进总分后再和地板分比较，把有原始词法信号的域内候选
+      // （「打分」直击 desc、「命名」直击 name）整体压到地板之下，直接误杀返回空。
       // ─────────────────────────────────────────────────────────
       const residentRuleKeys = new Set(
         SKILLS.filter((s) => s.manifest.skillType === "rule").map((s) => s.key)
       );
-      const RULE_SCORE_PENALTY = 0.75; // rule 分数乘以此系数，让 tool 天然优先
+      const FLOOR_RAW = 0.35;    // 准入地板：只看原始分。校准依据：域内活体最低分 0.38 过线存活，留 0.03 余量
+      const RULE_PENALTY = 0.15; // rule 惩罚：只影响排序，不影响准入（v4 验证该力度下 rule 仍能以 0.45~0.81 过线）
 
-      // 2. 混合融合打分（全库，包含 rule）
+      // 1) 原始层：干净信号打分（全库，包含 rule）
       const scored = SKILLS.map((s) => {
         const isRule = residentRuleKeys.has(s.key);
         const sem = s.vector ? dot(qv, s.vector) : 0;
@@ -539,19 +515,34 @@ async function handleMcp(msg) {
           bonus += 0.4;
         }
 
-        const penalizedLex = coverage >= 0.3 ? lexNorm : lexNorm * coverage * 2;
-        let totalScore = (penalizedLex * 0.6 + sem * 0.4) + bonus;
+        // 原始分：未掺任何惩罚，唯一准入依据
+        const rawFit = (lexNorm * 0.6 + sem * 0.4) + bonus;
 
-        // 闸 1 v4: rule 整体打折，让 tool 天然优先；不彻底剔除，保留 SOP 检索路径
-        if (isRule) totalScore *= RULE_SCORE_PENALTY;
-
+        // 域外强力阻断：这是「是不是域内」的判定，属于原始层职责，不是惩罚
         if (bonus === 0 && coverage < 0.25 && sem < 0.25) {
-          totalScore = 0;
+          return {
+            skill: s,
+            raw: 0,
+            score: 0,
+            lex: Math.round(lexNorm * 1000) / 1000,
+            sem: Math.round(sem * 1000) / 1000,
+            cov: coverage,
+            covStr: Math.round(coverage * 100) + "%",
+            bonus: 0,
+            isRule
+          };
         }
+
+        // 2) 惩罚层：只影响排序与输出 fit，永不参与准入
+        //    cov 惩罚与 v4 的 penalizedLex 数学等价：lexNorm*0.6*(1-min(cov*2,1))，
+        //    保证非 rule 候选的排序与 v4 完全一致；rule 改用减法 -0.15。
+        const covPenalty = coverage >= 0.3 ? 0 : lexNorm * 0.6 * (1 - Math.min(coverage * 2, 1));
+        const finalFit = rawFit - (isRule ? RULE_PENALTY : 0) - covPenalty;
 
         return {
           skill: s,
-          score: Math.round(totalScore * 1000) / 1000,
+          raw: Math.round(rawFit * 1000) / 1000,
+          score: Math.round(finalFit * 1000) / 1000,
           lex: Math.round(lexNorm * 1000) / 1000,
           sem: Math.round(sem * 1000) / 1000,
           cov: coverage,
@@ -561,27 +552,31 @@ async function handleMcp(msg) {
         };
       });
 
-      scored.sort((a, b) => b.score - a.score);
+      scored.sort((a, b) => b.score - a.score || b.raw - a.raw);
 
       // ─────────────────────────────────────────────────────────
-      // Part C: 闸 2 & 闸 3 — 地板分 + 平坦度相对 Margin 拒识
+      // Part C: 闸 2 & 闸 3 — 平坦度相对 Margin 拒识 + 绝对地板分
+      // 全部在【原始分】维度计算：拒识看的是域内证据强度，与惩罚无关。
       // ─────────────────────────────────────────────────────────
+      const byRaw = [...scored].sort((a, b) => b.raw - a.raw);
       let validHits = [];
-      if (scored.length > 0 && scored[0].score > 0) {
-        const median = scored[Math.floor(scored.length / 2)].score;
-        const top1 = scored[0].score;
+      if (byRaw.length > 0 && byRaw[0].raw > 0) {
+        const top1 = byRaw[0].raw;
+        const median = byRaw[Math.floor(byRaw.length / 2)].raw;
         const peakMargin = top1 - median;
-        const isTriggerHit = scored[0].bonus > 0;
+        const isTriggerHit = byRaw[0].bonus > 0;
 
-        // 闸 2 & 3: 只有当命中 trigger、或具有明显尖峰 (top1>=0.26 且 margin>=0.14) 时才放行
+        // 闸 2 & 3: 只有当命中 trigger、或具有明显尖峰 (top1>=0.26 且 margin>=0.14)、
+        // 或词法证据足够硬 (cov>=0.40 且 lex>=0.50) 时才放行
         const isConfident = (
           isTriggerHit ||
           (top1 >= 0.26 && peakMargin >= 0.14) ||
-          (scored[0].cov >= 0.40 && scored[0].lex >= 0.50)
+          (byRaw[0].cov >= 0.40 && byRaw[0].lex >= 0.50)
         );
 
         if (isConfident) {
-          validHits = scored.filter((s) => s.score >= Math.max(0.25, top1 * 0.4));
+          // 准入地板：绝对值 FLOOR_RAW，取代 v4 的相对地板 max(0.25, top1*0.4)
+          validHits = scored.filter((s) => s.raw >= FLOOR_RAW);
         }
       }
 
@@ -596,7 +591,7 @@ async function handleMcp(msg) {
           item.resident = true; // 常驻准则：摘要已通过 initialize 下发，如需完整 SOP 可调用 skill_get
         }
         if (verbose) {
-          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem, "cov " + h.covStr];
+          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem, "cov " + h.covStr, "raw " + h.raw];
         }
         return item;
       });
@@ -699,6 +694,9 @@ async function handleMcp(msg) {
 
   return { jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found: " + method } };
 }
+
+// 具名导出 segment：仅供 test-tokenizer.mjs 从构建产物做分词一致性验证（Workers 允许 default+具名并存）
+export { segment };
 
 export default {
   async fetch(request, env, ctx) {

@@ -3,7 +3,7 @@
   "name": "typescript-strict-guard",
   "namespace": "dev",
   "version": "1.0.0",
-  "description": "TypeScript 严格类型防御准则：严禁 any 与隐式类型，强制类型收窄、Discriminated Unions 与不可变契约",
+  "description": "TypeScript 严格模式（tsconfig strict）防御准则：严禁 any 与隐式类型，强制类型收窄、Discriminated Unions 与不可变契约",
   "category": "dev",
   "tags": [
     "typescript",
@@ -26,7 +26,10 @@
     "any类型",
     "ts严格类型",
     "泛型守卫",
-    "类型不安全"
+    "类型不安全",
+    "严格模式",
+    "最严格",
+    "类型检查"
   ],
   "keywords": [
     "typescript strict",
