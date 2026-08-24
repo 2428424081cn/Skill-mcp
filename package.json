@@ -12,6 +12,7 @@
     "test": "node --test --test-isolation=none \"test/**/*.test.ts\"",
     "demo": "node scripts/demo.ts",
     "start:http": "node src/main.ts --http",
+    "build:esa": "node scripts/build-esa.ts",
     "probe": "node scripts/probe.ts",
     "smoke": "node scripts/smoke.ts"
   },
