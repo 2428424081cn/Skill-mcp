@@ -18,7 +18,14 @@
     "fastapi 规范",
     "pydantic v2",
     "python 后端",
-    "fastapi-rest-service"
+    "fastapi-rest-service",
+    "fastapi",
+    "python api",
+    "pydantic",
+    "python后端",
+    "uvicorn",
+    "异步接口",
+    "python路由"
   ],
   "keywords": [
     "fastapi",
@@ -27,7 +34,12 @@
     "async",
     "router",
     "backend",
-    "api"
+    "api",
+    "python api",
+    "python后端",
+    "uvicorn",
+    "异步接口",
+    "python路由"
   ],
   "whenToUse": "在开发 Python FastAPI 微服务、设计 API 路由分组或配置 Pydantic v2 数据模型时使用。",
   "whenNotToUse": "Django 传统模版渲染应用。",

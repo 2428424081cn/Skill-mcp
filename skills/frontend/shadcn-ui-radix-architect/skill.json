@@ -19,7 +19,14 @@
     "tailwind 组件",
     "无障碍组件",
     "dialog",
-    "dropdown"
+    "dropdown",
+    "ui组件",
+    "弹窗",
+    "下拉菜单",
+    "对话框",
+    "tailwind组件",
+    "漂亮组件",
+    "组件库"
   ],
   "keywords": [
     "shadcn",
@@ -29,7 +36,17 @@
     "tailwind-merge",
     "asChild",
     "accessibility",
-    "aria"
+    "aria",
+    "ui组件",
+    "弹窗",
+    "下拉菜单",
+    "对话框",
+    "tailwind组件",
+    "无障碍组件",
+    "dialog",
+    "dropdown",
+    "漂亮组件",
+    "组件库"
   ],
   "whenToUse": "在设计与构建 React / Next.js 可复用 UI 组件、对话框、下拉菜单、表单控件及设计系统时使用。",
   "skillType": "tool",

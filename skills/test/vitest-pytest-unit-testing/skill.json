@@ -19,7 +19,11 @@
     "pytest",
     "mock",
     "测试用例",
-    "测试驱动"
+    "测试驱动",
+    "单测",
+    "断言",
+    "aaa模式",
+    "测试覆盖率"
   ],
   "keywords": [
     "vitest",
@@ -28,7 +32,13 @@
     "table-driven",
     "parametrize",
     "mock",
-    "spyOn"
+    "spyOn",
+    "单测",
+    "单元测试",
+    "测试用例",
+    "断言",
+    "aaa模式",
+    "测试覆盖率"
   ],
   "whenToUse": "在编写 TypeScript / Python 单元测试、设计边界测试用例与 Mock 外部依赖时使用。",
   "skillType": "tool",

@@ -18,7 +18,16 @@
     "react 规范",
     "app router",
     "server components",
-    "react 性能优化"
+    "react 性能优化",
+    "react19",
+    "nextjs",
+    "服务端组件",
+    "rsc",
+    "前端架构",
+    "页面卡顿",
+    "组件封装",
+    "前端状态",
+    "路由跳转"
   ],
   "keywords": [
     "react",
@@ -27,7 +36,15 @@
     "client",
     "server",
     "hook",
-    "component"
+    "component",
+    "react19",
+    "app router",
+    "服务端组件",
+    "前端架构",
+    "页面卡顿",
+    "组件封装",
+    "前端状态",
+    "路由跳转"
   ],
   "whenToUse": "在设计或重构 Next.js App Router 项目、划分 Server/Client 边界或排查 SSR 水合（Hydration）错误时使用。",
   "whenNotToUse": "老旧的 React 15/16 Class Components 项目。",

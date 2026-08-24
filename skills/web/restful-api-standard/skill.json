@@ -20,7 +20,15 @@
     "route",
     "http",
     "controller",
-    "service"
+    "service",
+    "restful",
+    "api设计",
+    "http状态码",
+    "接口规范",
+    "统一响应",
+    "uri命名",
+    "接口文档",
+    "api标准"
   ],
   "keywords": [
     "api",
@@ -28,7 +36,15 @@
     "http",
     "openapi",
     "standards",
-    "rules"
+    "rules",
+    "restful",
+    "api设计",
+    "http状态码",
+    "接口规范",
+    "统一响应",
+    "uri命名",
+    "接口文档",
+    "api标准"
   ],
   "whenToUse": "在设计、编写或重构 HTTP / RESTful API 接口时必须遵守",
   "whenNotToUse": "编写 CLI 命令行工具或离线脚本时无需遵守",

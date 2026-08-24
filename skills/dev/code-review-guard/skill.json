@@ -18,7 +18,15 @@
     "code review",
     "静态审查",
     "扫描代码漏洞",
-    "code-review-guard"
+    "code-review-guard",
+    "帮我看看代码",
+    "找茬",
+    "审查代码",
+    "代码质量",
+    "坏味道",
+    "代码优化建议",
+    "检查bug",
+    "挑毛病"
   ],
   "keywords": [
     "review",
@@ -27,7 +35,17 @@
     "pattern",
     "audit",
     "quality",
-    "clean"
+    "clean",
+    "代码审查",
+    "帮我看看代码",
+    "找茬",
+    "审查代码",
+    "代码质量",
+    "坏味道",
+    "代码优化建议",
+    "code review",
+    "检查bug",
+    "挑毛病"
   ],
   "whenToUse": "在评审代码质量、审查 PR/MR 或在发布前静态扫描源码漏洞与代码异味时使用。",
   "whenNotToUse": "运行自动化单元测试套件（请使用 npm test 或 pytest）。",

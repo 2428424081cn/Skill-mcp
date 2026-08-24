@@ -18,7 +18,16 @@
     "sql 性能分析",
     "慢查询优化",
     "sql 索引建议",
-    "sql-query-optimizer"
+    "sql-query-optimizer",
+    "慢sql",
+    "sql优化",
+    "加索引",
+    "全表扫描",
+    "explain",
+    "数据库慢",
+    "查询太慢",
+    "联合索引",
+    "sql优化建议"
   ],
   "keywords": [
     "sql",
@@ -27,7 +36,15 @@
     "index",
     "join",
     "explain",
-    "performance"
+    "performance",
+    "慢sql",
+    "sql优化",
+    "加索引",
+    "全表扫描",
+    "数据库慢",
+    "查询太慢",
+    "联合索引",
+    "sql优化建议"
   ],
   "whenToUse": "在遇到慢 SQL 查询、大表分页卡顿或需要为数据库表设计最优化复合索引时使用。",
   "whenNotToUse": "非关系型键值数据库（如 Redis）。",

@@ -17,7 +17,10 @@
     "dataloader",
     "n+1",
     "graphql 分页",
-    "apollo"
+    "apollo",
+    "游标分页",
+    "graphql接口",
+    "schema设计"
   ],
   "keywords": [
     "graphql",
@@ -26,7 +29,12 @@
     "relay",
     "cursor-pagination",
     "mutation",
-    "federation"
+    "federation",
+    "n+1",
+    "游标分页",
+    "graphql接口",
+    "schema设计",
+    "apollo"
   ],
   "whenToUse": "在设计 GraphQL 服务端 Schema、解决关联数据 N+1 查询与构建客户端按需拉取 API 时使用。",
   "skillType": "tool",

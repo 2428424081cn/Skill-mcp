@@ -17,7 +17,11 @@
     "技术选型",
     "架构评审",
     "rfc 文档",
-    "decision log"
+    "decision log",
+    "选型论证",
+    "技术决策",
+    "rfc文档",
+    "技术方案记录"
   ],
   "keywords": [
     "adr",
@@ -25,7 +29,13 @@
     "context",
     "decision-drivers",
     "options",
-    "consequences"
+    "consequences",
+    "架构决策",
+    "选型论证",
+    "技术决策",
+    "rfc文档",
+    "技术方案记录",
+    "架构评审"
   ],
   "whenToUse": "在进行重大技术选型、数据库/框架重构或制定核心架构规约时使用。",
   "skillType": "tool",

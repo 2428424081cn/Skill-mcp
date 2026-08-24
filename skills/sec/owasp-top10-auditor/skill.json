@@ -19,7 +19,17 @@
     "检查 xss",
     "web 安全扫描",
     "owasp-top10-auditor",
-    "安全漏洞排查"
+    "安全漏洞排查",
+    "web安全",
+    "owasp",
+    "sql注入",
+    "xss",
+    "跨站脚本",
+    "csrf",
+    "未授权访问",
+    "安全审计",
+    "越权漏洞",
+    "安全漏洞检查"
   ],
   "keywords": [
     "owasp",
@@ -28,7 +38,14 @@
     "idor",
     "security",
     "vulnerability",
-    "injection"
+    "injection",
+    "web安全",
+    "sql注入",
+    "跨站脚本",
+    "未授权访问",
+    "安全审计",
+    "越权漏洞",
+    "安全漏洞检查"
   ],
   "whenToUse": "在 Web 应用发布上线前，对照 OWASP Top 10 核心风险清单进行代码级与配置级漏洞排查。",
   "whenNotToUse": "底层操作系统内核漏洞分析。",

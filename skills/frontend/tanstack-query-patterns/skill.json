@@ -18,7 +18,13 @@
     "useQuery",
     "useMutation",
     "乐观更新",
-    "query key"
+    "query key",
+    "缓存更新",
+    "数据同步",
+    "usequery",
+    "usemutation",
+    "自动刷新",
+    "请求缓存"
   ],
   "keywords": [
     "tanstack-query",
@@ -27,7 +33,16 @@
     "useMutation",
     "queryKey",
     "invalidateQueries",
-    "setQueryData"
+    "setQueryData",
+    "react query",
+    "tanstack query",
+    "缓存更新",
+    "乐观更新",
+    "数据同步",
+    "usequery",
+    "usemutation",
+    "自动刷新",
+    "请求缓存"
   ],
   "whenToUse": "在 React / Next.js 项目中处理异步服务端状态管理、数据缓存、自动轮询与变更后乐观更新时使用。",
   "skillType": "tool",

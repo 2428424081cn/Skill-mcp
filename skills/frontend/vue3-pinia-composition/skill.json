@@ -17,7 +17,13 @@
     "composition api",
     "script setup",
     "vue 响应式",
-    "vue store"
+    "vue store",
+    "响应式丢失",
+    "storetorefs",
+    "vue状态",
+    "vue组件",
+    "vue响应式",
+    "组合式api"
   ],
   "keywords": [
     "vue3",
@@ -27,7 +33,13 @@
     "reactive",
     "storeToRefs",
     "computed",
-    "watchEffect"
+    "watchEffect",
+    "响应式丢失",
+    "storetorefs",
+    "vue状态",
+    "vue组件",
+    "vue响应式",
+    "组合式api"
   ],
   "whenToUse": "在开发 Vue 3 / Nuxt 3 前端项目、构建全局状态管理与组合式函数 (Composables) 时使用。",
   "skillType": "tool",

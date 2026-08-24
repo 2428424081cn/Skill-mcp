@@ -18,7 +18,11 @@
     "版本号规范",
     "semver",
     "发布日志",
-    "release notes"
+    "release notes",
+    "版本号",
+    "发版",
+    "语义化版本",
+    "自动生成更新日志"
   ],
   "keywords": [
     "semver",
@@ -27,7 +31,12 @@
     "patch",
     "changelog",
     "conventional-commits",
-    "release"
+    "release",
+    "版本号",
+    "发版",
+    "语义化版本",
+    "自动生成更新日志",
+    "release notes"
   ],
   "whenToUse": "在规划项目版本号发布、自动化生成 CHANGELOG.md 与管理 Git Release 标签时使用。",
   "skillType": "tool",

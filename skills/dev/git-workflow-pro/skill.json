@@ -19,7 +19,14 @@
     "检查 git 状态",
     "git diff",
     "git-workflow-pro",
-    "代码提交规范"
+    "代码提交规范",
+    "git暂存",
+    "git提交",
+    "怎么commit",
+    "代码变动",
+    "写commit",
+    "生成提交信息",
+    "git workflow"
   ],
   "keywords": [
     "git",
@@ -28,7 +35,14 @@
     "status",
     "branch",
     "vcs",
-    "conventional"
+    "conventional",
+    "git暂存",
+    "git提交",
+    "怎么commit",
+    "代码变动",
+    "写commit",
+    "生成提交信息",
+    "git workflow"
   ],
   "whenToUse": "在需要提交代码、生成符合标准的 commit message、分析暂存区变动或检查遗留调试语句时使用。",
   "whenNotToUse": "远程仓库 GitHub/GitLab 的在线 PR/Issue 管理。",

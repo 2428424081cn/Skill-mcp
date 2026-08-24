@@ -18,7 +18,15 @@
     "查看容器状态",
     "docker-ops-assistant",
     "docker 端口检查",
-    "容器健康检查"
+    "容器健康检查",
+    "docker",
+    "容器挂了",
+    "dockerfile",
+    "多阶段构建",
+    "镜像瘦身",
+    "端口映射",
+    "容器编排",
+    "docker status"
   ],
   "keywords": [
     "docker",
@@ -27,7 +35,14 @@
     "ports",
     "status",
     "health",
-    "devops"
+    "devops",
+    "容器挂了",
+    "dockerfile",
+    "多阶段构建",
+    "镜像瘦身",
+    "端口映射",
+    "容器编排",
+    "docker status"
   ],
   "whenToUse": "在排查本地微服务容器崩溃、检查端口占用或查看服务健康状态时使用。",
   "whenNotToUse": "生产环境全局容器销毁操作。",

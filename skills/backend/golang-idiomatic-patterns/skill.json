@@ -18,7 +18,17 @@
     "go 错误处理",
     "goroutine 泄露",
     "context.Context",
-    "go 并发"
+    "go 并发",
+    "go规范",
+    "协程泄露",
+    "goroutine",
+    "context传递",
+    "go错误",
+    "%w",
+    "channel",
+    "并发安全",
+    "go报错",
+    "panic"
   ],
   "keywords": [
     "golang",
@@ -28,7 +38,16 @@
     "fmt.Errorf",
     "context",
     "sync.WaitGroup",
-    "channel"
+    "channel",
+    "go规范",
+    "协程泄露",
+    "goroutine",
+    "context传递",
+    "go错误",
+    "%w",
+    "并发安全",
+    "go报错",
+    "panic"
   ],
   "whenToUse": "在编写 Go 语言后端服务、处理并发协程与标准库工程化代码时使用。",
   "skillType": "tool",

@@ -18,7 +18,12 @@
     "drizzle",
     "class-validator",
     "nestjs 模块",
-    "type-safe orm"
+    "type-safe orm",
+    "node后端",
+    "dto校验",
+    "依赖注入",
+    "nestjs模块",
+    "数据库迁移"
   ],
   "keywords": [
     "nestjs",
@@ -29,7 +34,13 @@
     "module",
     "guard",
     "interceptor",
-    "dto"
+    "dto",
+    "node后端",
+    "type-safe orm",
+    "dto校验",
+    "依赖注入",
+    "nestjs模块",
+    "数据库迁移"
   ],
   "whenToUse": "在开发 Node.js / TypeScript 企业级后端微服务、设计数据表 Schema 与事务处理时使用。",
   "skillType": "tool",

@@ -16,7 +16,13 @@
     "tailwind 4",
     "tailwind css变量",
     "@theme",
-    "tailwind tokens"
+    "tailwind tokens",
+    "tailwind4",
+    "css变量",
+    "设计系统",
+    "色彩搭配",
+    "容器查询",
+    "样式规范"
   ],
   "keywords": [
     "tailwind",
@@ -25,7 +31,14 @@
     "@layer",
     "container-queries",
     "oklch",
-    "design-system"
+    "design-system",
+    "tailwind4",
+    "tailwind v4",
+    "css变量",
+    "设计系统",
+    "色彩搭配",
+    "容器查询",
+    "样式规范"
   ],
   "whenToUse": "在基于 TailwindCSS v4 构建全新现代 Web 项目、配置主题颜色阶梯与自适应容器时使用。",
   "skillType": "tool",

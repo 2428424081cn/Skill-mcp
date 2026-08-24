@@ -18,7 +18,10 @@
     "结构化输出",
     "function calling",
     "大模型 json",
-    "zod schema"
+    "zod schema",
+    "大模型返回json",
+    "zod校验",
+    "解析json报错"
   ],
   "keywords": [
     "json-schema",
@@ -26,7 +29,13 @@
     "zod",
     "pydantic",
     "function-calling",
-    "repair-json"
+    "repair-json",
+    "结构化输出",
+    "json schema",
+    "大模型返回json",
+    "function calling",
+    "zod校验",
+    "解析json报错"
   ],
   "whenToUse": "在需要大模型严格返回合法 JSON 数据、对接外部 API 或做自动化决策流时使用。",
   "skillType": "tool",

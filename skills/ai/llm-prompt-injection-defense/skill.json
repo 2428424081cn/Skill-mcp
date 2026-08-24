@@ -17,7 +17,10 @@
     "越狱",
     "越权指令",
     "大模型安全",
-    "system prompt 保护"
+    "system prompt 保护",
+    "防套出提示词",
+    "输入隔离",
+    "xml定界"
   ],
   "keywords": [
     "prompt-injection",
@@ -25,7 +28,15 @@
     "guardrails",
     "untrusted-input",
     "xml-delimiters",
-    "canary"
+    "canary",
+    "提示词注入",
+    "prompt injection",
+    "越狱",
+    "越权指令",
+    "大模型安全",
+    "防套出提示词",
+    "输入隔离",
+    "xml定界"
   ],
   "whenToUse": "在构建任何接入 LLM 的业务应用、处理外部不可信用户输入与编写 Agent 控制流时必须遵守。",
   "skillType": "rule",

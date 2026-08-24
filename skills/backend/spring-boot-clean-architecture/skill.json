@@ -18,7 +18,15 @@
     "java clean architecture",
     "ddd",
     "六边形架构",
-    "domain entity"
+    "domain entity",
+    "java架构",
+    "分层架构",
+    "六边形",
+    "controller",
+    "service层",
+    "领域模型",
+    "实体类",
+    "mapstruct"
   ],
   "keywords": [
     "spring-boot",
@@ -28,7 +36,15 @@
     "use-case",
     "controller",
     "mapstruct",
-    "transactional"
+    "transactional",
+    "spring boot",
+    "java架构",
+    "分层架构",
+    "ddd",
+    "六边形",
+    "service层",
+    "领域模型",
+    "实体类"
   ],
   "whenToUse": "在开发 Spring Boot 3 / Java 21 企业级微服务、设计领域模型与规约分层架构时使用。",
   "skillType": "tool",

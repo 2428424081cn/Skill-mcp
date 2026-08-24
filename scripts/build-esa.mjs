@@ -412,13 +412,31 @@ async function handleMcp(msg) {
           score: Math.round(totalScore * 1000) / 1000,
           lex: Math.round(lexNorm * 1000) / 1000,
           sem: Math.round(sem * 1000) / 1000,
-          cov: Math.round(coverage * 100) + "%"
+          cov: coverage,
+          covStr: Math.round(coverage * 100) + "%",
+          bonus
         };
       });
 
-      // 3. 置信度硬截断 (低于 MIN_CONFIDENCE_THRESHOLD 的彻底过滤)
-      const validHits = scored.filter((s) => s.score >= MIN_CONFIDENCE_THRESHOLD);
-      validHits.sort((a, b) => b.score - a.score);
+      scored.sort((a, b) => b.score - a.score);
+
+      // 3. 相对 Margin 与分布平坦度拒识机制 (Pillar B)
+      let validHits = [];
+      if (scored.length > 0 && scored[0].score > 0) {
+        const median = scored[Math.floor(scored.length / 2)].score;
+        const top1 = scored[0].score;
+        const peakMargin = top1 - median;
+
+        const isConfident = (
+          scored[0].bonus > 0 ||
+          (top1 >= 0.26 && peakMargin >= 0.14) ||
+          (scored[0].cov >= 0.40 && scored[0].lex >= 0.50)
+        );
+
+        if (isConfident) {
+          validHits = scored.filter((s) => s.score >= Math.max(0.25, top1 * 0.4));
+        }
+      }
 
       const hits = validHits.slice(0, topK).map((h) => {
         const item = {
@@ -428,7 +446,7 @@ async function handleMcp(msg) {
           fit: h.score
         };
         if (verbose) {
-          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem, "cov " + h.cov];
+          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem, "cov " + h.covStr];
         }
         return item;
       });

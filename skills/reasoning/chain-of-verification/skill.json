@@ -20,14 +20,29 @@
     "architecture",
     "solve",
     "math",
-    "analysis"
+    "analysis",
+    "防幻觉",
+    "验证事实",
+    "交叉验证",
+    "一步步确认",
+    "检查准确性",
+    "验证步骤",
+    "自检",
+    "cove"
   ],
   "keywords": [
     "reasoning",
     "cove",
     "verification",
     "hallucination-prevention",
-    "rules"
+    "rules",
+    "防幻觉",
+    "验证事实",
+    "交叉验证",
+    "一步步确认",
+    "检查准确性",
+    "验证步骤",
+    "自检"
   ],
   "whenToUse": "在处理复杂技术选型、高风险算法推导或易产生幻觉的关键事实推断时执行",
   "whenNotToUse": "简单文本格式化或固定样板代码生成时无需多轮验证",
