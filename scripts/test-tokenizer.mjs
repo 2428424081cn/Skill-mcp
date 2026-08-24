@@ -50,15 +50,18 @@ function runCase({ input, exact, mustHave = [], mustNot = [], note }) {
 }
 
 const cases = [
-  // CJK 短语必须 bigram 化，绝不允许整短语 token 进索引/查询两侧
+  // ── v5 基线回归：纯中文 trigger bigram 化，绝不允许整短语 token ──
   { input: "正则卡死", mustHave: ["正则", "卡死"], mustNot: ["正则卡死"], note: "bigram 化，不含整短语 token；滑动窗口含中间片「则卡」属设计行为" },
-  // 拉丁+数字不拆碎（长度<=4 无 trigram，严格相等）
+  { input: "根因分析", mustHave: ["根因", "分析"], note: "刀1 防误伤回归：健康 trigger 的 bigram 全保留" },
+  // ── 拉丁与词边界 ──
   { input: "vue3", exact: ["vue3"], note: "拉丁+数字整词保留" },
-  // 词边界切分 + lowercase
   { input: "api key", exact: ["api", "key"], note: "按词边界切+lowercase" },
   { input: "npm audit", mustHave: ["npm", "audit"], mustNot: ["npmaudit"], note: "按词边界切+lowercase（audit 长>4 附带三元组召回片，属设计行为）" },
-  // 大小写归一（长词附带字符三元组召回片，属设计行为，不做严格相等）
   { input: "TypeScript", mustHave: ["typescript"], mustNot: ["TypeScript"], note: "大小写归一；附带 typ/ype/... 三元组召回片属设计行为" },
+  // ── v6 刀2：CJK↔拉丁边界必切，两侧同一套逻辑 ──
+  { input: "找bug", mustHave: ["找", "bug"], mustNot: ["找b", "找bug"], note: "混合 token 归一：永远拆成 CJK+拉丁，索引/查询两侧永不错位" },
+  // ── v6 刀1：填充 bigram 过滤，长句覆盖率分母只剩内容词 ──
+  { input: "这个正则一跑网站就卡死", mustHave: ["正则", "网站", "卡死"], mustNot: ["这个", "个正", "则一", "一跑", "站就", "就卡"], note: "含停用单字的跨字噪声片全部剔除；「跑网」两字均非停用字故保留（无词典不判语义）" }
 ];
 
 console.log("== segment() 分词一致性单测（对象：dist/esa-worker.js 构建产物）==");

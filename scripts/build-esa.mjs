@@ -148,19 +148,49 @@ for (const s of skills) {
 // Part B & C: 生成 Worker 运行时脚本 (含全局同义词典与 3 闸拒识层)
 // ─────────────────────────────────────────────────────────────
 const workerSource = `// Skill-MCP 边缘分发网关 (Aliyun ESA / Cloudflare Workers)
-// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构 v5：
+// 包含 ${skills.length} 个精选技能，内置三层通用检索与拒识架构 v6：
 // 1. 索引时 IDF 自动合成 Triggers (合成词走 1.5 权重 BM25)
 // 2. 查询时全局同义词典扩展 (α=0.4 对称展开)
-// 3. 两阶段打分 v5：原始分管准入（FLOOR_RAW=0.35 + 平坦度闸），惩罚（rule -0.15 / cov 罚）只管排序
-//    分词器 segment 与构建侧 scripts/lib/segment.mjs 同源，索引/查询两侧对称
+// 3. 两阶段打分：原始分管准入（FLOOR_RAW=0.35 + 平坦度闸），惩罚（rule -0.15 / cov 罚）只管排序
+// 4. 分词器 v6：与构建侧 scripts/lib/segment.mjs 同源对称；
+//    刀1 填充 bigram 过滤（长句覆盖率分母只剩内容词，治自然语言稀释）+
+//    刀2 CJK↔拉丁边界必切（"找bug" -> 找+bug，混合 token 两侧永不错位）
 
 const SKILLS = ${JSON.stringify(skills)};
 
 const CJK_RE = /[\\u4e00-\\u9fff]/;
 
 const STOPWORDS = new Set([
-  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做", "支持", "提供", "使用", "进行", "相关", "问题", "处理", "实现", "工具", "助手", "功能", "基于", "用于"
+  "的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "一个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "么", "怎", "才", "做", "把", "给", "让", "被", "及", "等", "与", "或", "什么", "怎么", "如何", "怎样", "为什么", "推荐", "几个", "几部", "今天", "明天", "需要", "带", "请问", "帮我", "一下", "可以", "怎么做", "支持", "提供", "使用", "进行", "相关", "问题", "处理", "实现", "工具", "助手", "功能", "基于", "用于",
+  // v6 刀1 补充（第五轮探针实证的高频填充成分）
+  "个", "这个", "那个", "是不是", "有没有"
 ]);
+
+// 单字停用子集：用于填充 bigram 判定（bigram 任一字命中即视为跨字噪声）—— 刀1
+const SINGLE_STOP = new Set([...STOPWORDS].filter((w) => w.length === 1));
+
+function isFillerBigram(b) {
+  return SINGLE_STOP.has(b[0]) || SINGLE_STOP.has(b[1]);
+}
+
+// 刀2：把混合词按 CJK / 拉丁数字边界切开（"找bug" -> ["找","bug"]；"vue3" 整段拉丁保持）
+function splitRuns(w) {
+  const parts = [];
+  let cur = "";
+  let curCJK = null;
+  for (const ch of w) {
+    const c = CJK_RE.test(ch);
+    if (curCJK === null || c === curCJK) {
+      cur += ch;
+    } else {
+      parts.push(cur);
+      cur = ch;
+    }
+    curCJK = c;
+  }
+  if (cur !== "") parts.push(cur);
+  return parts;
+}
 
 // Part B: 全局同义词典 (语言层通用资产，零技能耦合)
 const SYNONYMS = {
@@ -189,7 +219,7 @@ const SYNONYMS = {
 
 const SYN_ALPHA = 0.4; // 同义词扩展权重
 
-// 修 3 不变量：运行时分词器与构建时共用同一算法 —— 本函数是 scripts/lib/segment.mjs 的镜像副本，
+// 修 3 不变量 + v6 两刀：运行时分词器与构建时共用同一算法 —— 本块是 scripts/lib/segment.mjs 的镜像副本，
 // 两侧行为必须逐字一致（改动任何一侧都要同步另一侧，test-tokenizer.mjs 负责从产物侧验证）。
 function segment(text) {
   const lower = String(text || "").toLowerCase();
@@ -197,20 +227,21 @@ function segment(text) {
   const out = [];
   for (const w of words) {
     if (STOPWORDS.has(w)) continue;
-    if (CJK_RE.test(w)) {
-      if (w.length === 1) {
-        if (!STOPWORDS.has(w)) out.push(w);
-      } else {
-        for (let i = 0; i < w.length - 1; i++) {
-          const bigram = w.slice(i, i + 2);
-          if (!STOPWORDS.has(bigram)) out.push(bigram);
+    for (const part of splitRuns(w)) {
+      if (part === "") continue;
+      if (CJK_RE.test(part)) {
+        if (part.length === 1) {
+          if (!SINGLE_STOP.has(part)) out.push(part);
+        } else {
+          for (let i = 0; i < part.length - 1; i++) {
+            const bigram = part.slice(i, i + 2);
+            if (!STOPWORDS.has(bigram) && !isFillerBigram(bigram)) out.push(bigram);
+          }
         }
-      }
-    } else {
-      if (!STOPWORDS.has(w)) {
-        out.push(w);
-        if (w.length > 4) {
-          for (let i = 0; i < w.length - 2; i++) out.push(w.slice(i, i + 3));
+      } else {
+        out.push(part);
+        if (part.length > 4) {
+          for (let i = 0; i < part.length - 2; i++) out.push(part.slice(i, i + 3));
         }
       }
     }
