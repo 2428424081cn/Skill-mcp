@@ -76,6 +76,7 @@ query ──► CJK 二元组分词(拉丁按词边界切,单字符垃圾 token 
 | v4 | 16/20 | 12/12 | rule 回池带惩罚,术语/日常词分流生效 |
 | v5 | 16/20 | 12/12 | 摘除高频泄漏词,暴露混合 token 与长句稀释 |
 | **v6** | **17/18** | **11/12** | 内容词 cov + token 归一化,距满分一行代码 |
+| **v7** | **22/22** | **12/12** | 单字符拉丁 token 清除;本地全量库(69 技能)34 发考卷首次满分 |
 
 \* 严格判定:top1 必须是正确技能,近似替代品不算分。
 † v1 的"满分"含水分:测试集与索引词同源,且部分命中靠常驻 rule 的万能描述"碰巧"兜底——这正是后来域外翻车的伏笔。
@@ -178,8 +179,12 @@ LobeChat / Claude Desktop / Cursor 等任意 MCP 客户端:
 
 仓库内置 [`tests/regression-suite.json`](tests/regression-suite.json):34 条用例,六轮实战沉淀,每条带病史标注(哪一版回归过、为什么)。
 
-- **通过线**:域内 ≥ 27/30,域外零泄漏
+- **通过线**:域内 ≥ 20/22,域外零泄漏(top1 fit < 0.55 或返回空)
 - **用法**:每次改动权重 / triggers / 分词器后全量跑一遍,单变量迭代
+  ```bash
+  node scripts/build-esa.mjs && node scripts/test-regression.mjs          # 本地构建产物
+  node scripts/test-regression.mjs --remote                               # 打线上环境对照
+  ```
 - **原则**:测试集与索引词必须不同源——用技能自己的描述改写出来的 query 是自证循环,测不出泛化
 - **本地验证**:`node scripts/build-esa.mjs && node scripts/test-tokenizer.mjs`(分词器一致性,直接对构建产物断言)
 

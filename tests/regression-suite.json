@@ -1,0 +1,69 @@
+{
+  "_readme": "skill-mcp 黑盒回归测试集 · 六轮对抗实测沉淀(2026-08) · 每条用例带病史 note,标注它在哪一版翻过车、为什么",
+  "meta": {
+    "endpoint": "https://mcp.javastar.asia/",
+    "transport": "streamableHttp",
+    "tool": "skill_search",
+    "call_args": { "topK": 3, "verbose": false },
+    "request_interval_ms": 250,
+    "updated": "2026-08-25",
+    "history": [
+      { "version": "v1", "score": "26/30*", "note": "*含注水判定;域外 0/8 全漏" },
+      { "version": "v2", "score": "域外8/8, 域内大回归", "note": "地板分一刀切,误杀自然语言" },
+      { "version": "v3", "score": "域外12/12", "note": "常驻rule被斩首,准则类query装聋" },
+      { "version": "v4", "score": "29/30", "note": "rule回池带惩罚,术语/日常词分流" },
+      { "version": "v5", "score": "29/30", "note": "摘泄漏词;暴露混合token与长句稀释" },
+      { "version": "v6", "score": "29/30", "note": "内容词cov+token归一化;剩A股单字符IDF炸弹" }
+    ]
+  },
+  "pass_criteria": {
+    "hit_min": 20,
+    "hit_total": 22,
+    "reject_leak_max": 0,
+    "reject_total": 12,
+    "reject_floor": 0.55,
+    "rule": "hit 类用例 ≥20/22 且 reject 类零泄漏(域外 top1 fit < 0.55 或返回空)即通过"
+  },
+  "usage_rules": [
+    "每次改动 权重/triggers/分词器/地板分 后全量跑一遍,单变量迭代",
+    "测试集与索引词必须不同源:用技能自己的描述改写出来的 query 是自证循环,测不出泛化",
+    "新增技能时:补 1 条 hit 用例 + 1 条同域 reject 用例,保持对抗性",
+    "判定从严格:近似替代品不算 hit(如 migrator 不能替代 strict-guard)"
+  ],
+  "cases": [
+    { "id": "S01", "category": "synonym",  "mode": "hit",    "expect": ["git:"],                                     "query": "帮我把提交信息写得规范一点",          "note": "提交信息→git 系" },
+    { "id": "S02", "category": "synonym",  "mode": "hit",    "expect": ["sec:security-secret-scanner"],              "query": "这段代码是不是把数据库密码写死在里面了",    "note": "写死→secret-scanner(v2曾死于阈值,v3修复)" },
+    { "id": "S03", "category": "synonym",  "mode": "hit",    "expect": ["dev:naming-conventions"],                   "query": "怎么给函数和变量起个好听又清楚的名字",     "note": "起名→naming(v3死于rule斩首,v4修复)" },
+    { "id": "S04", "category": "synonym",  "mode": "hit",    "expect": ["sec:owasp-top10-auditor"],                  "query": "帮我看看这段代码有没有安全漏洞",        "note": "安全漏洞→owasp" },
+    { "id": "S05", "category": "synonym",  "mode": "hit",    "expect": ["reasoning:root-cause-5whys"],               "query": "系统挂了但查不出原因,帮我一层层追问到底",  "note": "追问→5whys(v3死于rule斩首,v4修复)" },
+    { "id": "S06", "category": "synonym",  "mode": "hit",    "expect": ["reasoning:decision-tradeoff-matrix"],       "query": "两个方案选不准,列个表格打分比较一下",     "note": "选不准打分→matrix(v2~v5连死4版,v6内容词cov修复)" },
+    { "id": "S07", "category": "synonym",  "mode": "hit",    "expect": ["web:restful-api-standard"],                 "query": "REST 接口路径该怎么设计才优雅",       "note": "REST→restful;已知瑕疵:常被graphql/fastapi的rest子串压位,进top3即可" },
+    { "id": "S08", "category": "synonym",  "mode": "hit",    "expect": ["design:modern-ui-aesthetics"],              "query": "页面配色和排版怎么才显得高级",         "note": "配色高级→ui-aesthetics(v3死于rule斩首)" },
+    { "id": "S09", "category": "synonym",  "mode": "hit",    "expect": ["ai:llm-prompt-injection-defense"],          "query": "用户可能在输入里夹带恶意指令操纵AI,怎么防", "note": "恶意指令→injection-defense" },
+    { "id": "S10", "category": "synonym",  "mode": "hit",    "expect": ["dev:typescript-strict-guard"],              "query": "TS 项目类型总是漏,帮我上最严格的检查",   "note": "最严格→ts-guard(严格判定:migrator是替代品不算,v5修复)" },
+    { "id": "S11", "category": "mixed",    "mode": "hit",    "expect": ["arch:clean-code-solid"],                    "query": "refactor 这坨面条代码,要求可读性",     "note": "中英混杂→clean-code" },
+    { "id": "S12", "category": "mixed",    "mode": "hit",    "expect": ["git:"],                                     "query": "帮我写条规范的 commit message",       "note": "commit message→git 系" },
+    { "id": "S13", "category": "colloquial","mode": "hit",   "expect": ["reasoning:root-cause-5whys"],               "query": "调试半天没头绪,教我系统性地找bug",     "note": "病史:v4靠没头绪单点存活,v5摘词后死,v6靠找bug token归一化复活" },
+    { "id": "S14", "category": "typo",     "mode": "hit",    "expect": ["review", "code-review-guard"],              "query": "帮我做一次代码审察",                "note": "错别字:审察→review" },
+    { "id": "S15", "category": "typo",     "mode": "hit",    "expect": ["dev:naming-conventions"],                   "query": "变量命名规饭是什么来着",              "note": "错别字:规饭→naming" },
+    { "id": "S16", "category": "oob",      "mode": "reject", "expect": [],                                           "query": "帮我订明天去东京的机票",             "note": "域外:订机票(v1蹭到0.63的经典案例)" },
+    { "id": "S17", "category": "oob",      "mode": "reject", "expect": [],                                           "query": "红烧肉怎么做才软烂不腻",             "note": "域外:红烧肉" },
+    { "id": "S18", "category": "oob",      "mode": "reject", "expect": [],                                           "query": "今天A股行情怎么样",               "note": "⚠️v6回归点:A股切出单字符a,与A/B的孤立字母打出bm25 0.995;修复=分词器滤单字符拉丁token" },
+    { "id": "S19", "category": "oob",      "mode": "reject", "expect": [],                                           "query": "写一首关于秋天的诗",               "note": "域外:写诗" },
+    { "id": "S20", "category": "multi",    "mode": "hit",    "expect": ["dev:naming-conventions"],                   "query": "优化这个函数的性能,顺便检查下命名和注释",  "note": "多义:命名直击name字段3.5权重(v2~v5死于长句稀释,v6修复)" },
+    { "id": "S21", "category": "multi",    "mode": "hit",    "expect": ["git:", "sec:"],                             "query": "上线前把代码安全、提交信息都过一遍",      "note": "多义:安全+提交双域" },
+    { "id": "S22", "category": "oob-blind","mode": "reject", "expect": [],                                           "query": "帮我查下明天北京天气怎么样",          "note": "域外盲测:天气(防对既有考卷过拟合)" },
+    { "id": "S23", "category": "oob-blind","mode": "reject", "expect": [],                                           "query": "推荐几部好看的科幻电影",             "note": "域外盲测:电影" },
+    { "id": "S24", "category": "oob-blind","mode": "reject", "expect": [],                                           "query": "房贷100万30年月供多少",            "note": "域外盲测:房贷" },
+    { "id": "S25", "category": "oob-blind","mode": "reject", "expect": [],                                           "query": "我家猫最近老是呕吐怎么办",           "note": "域外盲测:宠物" },
+    { "id": "S26", "category": "fresh",    "mode": "hit",    "expect": ["dev:git-workflow-pro"],                     "query": "提交代码前帮我自动生成一条像样的说明",     "note": "新域内:生成提交说明" },
+    { "id": "S27", "category": "fresh",    "mode": "hit",    "expect": ["regex-redos"],                              "query": "这个正则一跑网站就卡死,是不是写法有问题",   "note": "⚠️长句cov验刀点:v5死于稀释(整短语直查1.04/长句空),v6修复0.68" },
+    { "id": "S28", "category": "fresh",    "mode": "hit",    "expect": ["structured-output"],                        "query": "接口返回的json老解析失败,想要严格的格式约定", "note": "json schema" },
+    { "id": "S29", "category": "fresh",    "mode": "reject", "expect": [],                                           "query": "周末去哪爬山比较好",               "note": "域外盲测:爬山" },
+    { "id": "S30", "category": "fresh",    "mode": "reject", "expect": [],                                           "query": "帮我算一下这道微积分题",             "note": "域外盲测:微积分" },
+    { "id": "P01", "category": "probe-leak","mode": "reject","expect": [],                                           "query": "今天A股跌得我没头绪",              "note": "⚠️修1泄漏探针:没头绪已从5whys摘除,此query必须拒" },
+    { "id": "P02", "category": "probe-leak","mode": "reject","expect": [],                                           "query": "选哪个牌子的猫粮好纠结",             "note": "⚠️修1泄漏探针:纠结已从decision-matrix摘除,此query必须拒" },
+    { "id": "P03", "category": "probe-term","mode": "hit",   "expect": ["root-cause-5whys"],                         "query": "帮我用5whys分析这次线上事故的根因",     "note": "术语直击:常驻rule回池后仍可被术语命中(v6实测0.94)" },
+    { "id": "P04", "category": "probe-term","mode": "hit",   "expect": ["naming-conventions"],                       "query": "团队要定代码命名规范,给个标准",        "note": "术语直击:rule带惩罚仍应登顶(v6实测0.95)" }
+  ]
+}
