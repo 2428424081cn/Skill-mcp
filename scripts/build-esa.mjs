@@ -289,12 +289,14 @@ async function handleMcp(msg) {
         tools: [
           {
             name: "skill_search",
-            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发）",
+            description: "按意图语义检索匹配的技能（全局准则已在 initialize 中常驻下发，支持 verbose 调优打分）",
             inputSchema: {
               type: "object",
               properties: {
                 query: { type: "string", description: "任务需求描述" },
-                topK: { type: "number", description: "返回数量上限 (默认 5)" }
+                topK: { type: "number", description: "返回数量上限 (默认 5)" },
+                verbose: { type: "boolean", description: "是否返回打分细节 (BM25词频分/语义向量分分解，用于调试调优，默认 false)" },
+                includeRules: { type: "boolean", description: "是否在本次响应中附带全局准则清单 (默认 false，准则已在 initialize 注入)" }
               },
               required: ["query"]
             }
@@ -333,6 +335,9 @@ async function handleMcp(msg) {
     if (name === "skill_search") {
       const query = String(args.query || "");
       const topK = Math.min(Math.max(Number(args.topK) || 5, 1), 20);
+      const verbose = Boolean(args.verbose);
+      const includeRules = Boolean(args.includeRules);
+
       const qTokens = tokenize(query);
       const qv = hashVector(qTokens, 2048);
       const qLower = query.toLowerCase();
@@ -364,27 +369,48 @@ async function handleMcp(msg) {
 
         return {
           skill: s,
-          score: Math.round(totalScore * 1000) / 1000
+          score: Math.round(totalScore * 1000) / 1000,
+          lex: Math.round(lexNorm * 1000) / 1000,
+          sem: Math.round(sem * 1000) / 1000
         };
       });
 
       scored.sort((a, b) => b.score - a.score);
-      const hits = scored.slice(0, topK).map((h) => ({
-        key: h.skill.key,
-        name: h.skill.manifest.name,
-        desc: h.skill.manifest.description,
-        fit: h.score
-      }));
+      const hits = scored.slice(0, topK).map((h) => {
+        const item = {
+          key: h.skill.key,
+          name: h.skill.manifest.name,
+          desc: h.skill.manifest.description,
+          fit: h.score
+        };
+        if (verbose) {
+          item.fitReasons = ["bm25 " + h.lex, "sem " + h.sem];
+        }
+        return item;
+      });
 
-      // 纯净精简返回：不再重复搬运 10KB activeRules，单次检索流量暴降 94%
-      const summaryText = hits.length > 0
-        ? hits.map((h, i) => (i + 1) + ". " + h.key + " (fit: " + h.fit + ") - " + h.desc).join("\\n")
+      // 构建文本摘要
+      let summaryText = hits.length > 0
+        ? hits.map((h, i) => {
+            const fitStr = verbose && h.fitReasons ? h.fit + " [" + h.fitReasons.join(", ") + "]" : h.fit;
+            return (i + 1) + ". " + h.key + " (fit: " + fitStr + ") - " + h.desc;
+          }).join("\\n")
         : "无匹配技能";
 
       const structured = {
         count: hits.length,
         hits
       };
+
+      // 如果客户端显式要求附带准则清单
+      if (includeRules) {
+        const hitKeys = new Set(hits.map((h) => h.key));
+        structured.activeRules = SKILLS.filter((s) => s.manifest.skillType === "rule" && !hitKeys.has(s.key)).map((s) => ({
+          key: s.key,
+          summary: s.manifest.description.split("：")[0] || s.manifest.description.slice(0, 35)
+        }));
+        summaryText += "\\n\\n### 全局强制准则 (Active Rules):\\n" + structured.activeRules.map((r) => "- [RULE] " + r.key + ": " + r.summary).join("\\n");
+      }
 
       return {
         jsonrpc: "2.0",
